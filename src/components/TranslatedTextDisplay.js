@@ -70,9 +70,9 @@
 
     const TranslatedTextDisplay = () => {
     const { translatedText, resetTranslatedText } = useStore();
-    const combinedText = translatedText.join(' '); // دمج جميع النصوص في المصفوفة
+    const combinedText = translatedText.join(' '); 
 
-    const [targetLanguage, setTargetLanguage] = useState('en'); // اللغة الافتراضية: الإنجليزية
+    const [targetLanguage, setTargetLanguage] = useState('en');
     const [translation, setTranslation] = useState('');
     const [loading, setLoading] = useState(false);
     const [languages, setLanguages] = useState([]);
@@ -84,10 +84,8 @@
         if (!response.ok) throw new Error('Failed to fetch languages');
         const data = await response.json();
             console.log(data.tl);
-        // استخراج قائمة اللغات المتاحة من `al.tl`
         const availableLanguages = data.tl || {};
 
-        // تحويل الكائن إلى مصفوفة [ { code: "en", name: "English" }, ... ]
         const formattedLanguages = Object.entries(availableLanguages).map(([code, name]) => ({
             code,
             name

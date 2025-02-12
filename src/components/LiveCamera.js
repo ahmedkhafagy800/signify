@@ -7,7 +7,6 @@ import LibraTranslator from './LibraTranslator';
 const LiveCamera = () => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    // استخدام appendTranslatedText بدلاً من setTranslatedText
     const { appendTranslatedText } = useStore();
     const intervalId = useRef(null);
     const streamRef = useRef(null); 
@@ -62,7 +61,6 @@ const LiveCamera = () => {
     const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-        appendTranslatedText("احبك يا عزيزتي");
 
     canvas.toBlob(async (blob) => {
       if (blob) {
@@ -75,9 +73,7 @@ const LiveCamera = () => {
             body: formData,
           });
           const data = await response.json();
-          // إضافة الترجمة الجديدة إلى الترجمات الموجودة
           appendTranslatedText(data.translatedText);
-          appendTranslatedText("ازيك");
         } catch (error) {
           console.error('Error sending frame:', error);
         }
@@ -90,7 +86,6 @@ const LiveCamera = () => {
             
             <h2>ترجمة فورية</h2>
             <video ref={videoRef} autoPlay style={{ width: '100%', maxWidth: '600px' }} />
-            {/* العنصر canvas يُستخدم فقط لالتقاط الإطارات */}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
             <TranslatedTextDisplay />
             

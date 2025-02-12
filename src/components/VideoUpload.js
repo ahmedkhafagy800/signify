@@ -5,7 +5,6 @@ import LibraTranslator from './LibraTranslator';
 
 const VideoUpload = () => {
   const [file, setFile] = useState(null);
-  // استخدام appendTranslatedText
   const { appendTranslatedText } = useStore();
 
     
@@ -27,7 +26,6 @@ const VideoUpload = () => {
         body: formData,
       });
       const data = await response.json();
-      // إضافة الترجمة الجديدة
       appendTranslatedText(data.translatedText);
     } catch (error) {
       console.error('Error uploading video:', error);

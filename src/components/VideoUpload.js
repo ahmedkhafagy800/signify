@@ -8,6 +8,9 @@ const VideoUpload = () => {
   // استخدام appendTranslatedText
   const { appendTranslatedText } = useStore();
 
+    
+    
+    
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -37,7 +40,7 @@ const VideoUpload = () => {
       <input type="file" accept="video/*" onChange={handleFileChange} />
       <button onClick={handleUpload}>رفع وترجمة</button>
             <TranslatedTextDisplay />
-            <LibraTranslator />
+            {/* <LibraTranslator /> */}
     </div>
   );
 };

@@ -93,7 +93,8 @@ const LiveCamera = () => {
             {/* العنصر canvas يُستخدم فقط لالتقاط الإطارات */}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
             <TranslatedTextDisplay />
-            <LibraTranslator />
+            
+            {/* <LibraTranslator /> */}
 
         </div>
         );

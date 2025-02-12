@@ -31,31 +31,31 @@ const LibraTranslator = () => {
       <h3>النص الأصلي (العربي):</h3>
       <p>{currentText || 'لا يوجد نص للترجمة'}</p>
 
-      <div style={{ margin: '10px 0' }}>
+        <div style={{ margin: '10px 0' }}>
         <label htmlFor="targetLanguage">اختر اللغة:</label>
         <select 
-          id="targetLanguage"
-          value={targetLanguage}
-          onChange={(e) => setTargetLanguage(e.target.value)}
-          style={{ marginLeft: '10px' }}
+            id="targetLanguage"
+            value={targetLanguage}
+            onChange={(e) => setTargetLanguage(e.target.value)}
+            style={{ marginLeft: '10px' }}
         >
-          <option value="en">الإنجليزية</option>
-          <option value="fr">الفرنسية</option>
-          <option value="de">الألمانية</option>
-          <option value="es">الإسبانية</option>
+            <option value="en">الإنجليزية</option>
+            <option value="fr">الفرنسية</option>
+            <option value="de">الألمانية</option>
+            <option value="es">الإسبانية</option>
         </select>
-      </div>
-
-      <button onClick={handleTranslate} disabled={loading || !currentText}>
-        {loading ? 'جارٍ الترجمة...' : 'ترجم النص'}
-      </button>
-
-      {translation && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>النص المترجم:</h3>
-          <p>{translation}</p>
         </div>
-      )}
+
+        <button onClick={handleTranslate} disabled={loading || !currentText}>
+        {loading ? 'جارٍ الترجمة...' : 'ترجم النص'}
+        </button>
+
+        {translation && (
+        <div style={{ marginTop: '20px' }}>
+            <h3>النص المترجم:</h3>
+            <p>{translation}</p>
+        </div>
+        )}
     </div>
   );
 };

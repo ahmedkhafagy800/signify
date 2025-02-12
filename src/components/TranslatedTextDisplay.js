@@ -67,7 +67,7 @@
     // TranslatedTextDisplay.js
     import React, { useState, useEffect } from 'react';
     import useStore from '../store';
-
+    import './TranslatedTextDisplay.css';
     const TranslatedTextDisplay = () => {
     const { translatedText, resetTranslatedText } = useStore();
     const combinedText = translatedText.join(' '); // دمج جميع النصوص في المصفوفة
@@ -117,45 +117,42 @@
         }
     };
 
-    return (
-        <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc' }}>
-        <h3>النص المترجم:</h3>
-        {translatedText.length === 0 ? (
-            <p>سيظهر النص هنا بعد الترجمة...</p>
-        ) : (
-            <p>{combinedText}</p>
-        )}
-        <br /><br />
-        <button onClick={resetTranslatedText}>مسح الترجمات</button>
-        <br /><br />
-        <div style={{ margin: '10px 0' }}>
-            <label htmlFor="targetLanguage">اختر اللغة:</label>
-            <select 
-            id="targetLanguage"
-            value={targetLanguage}
-            onChange={(e) => setTargetLanguage(e.target.value)}
-            style={{ marginLeft: '10px' }}
-            >
-            {languages.length > 0 ? (
-                languages.map(lang => (
-                <option key={lang.code} value={lang.code}>{lang.name}</option>
-                ))
-            ) : (
-                <option value="en">الإنجليزية</option>
-            )}
-            </select>
+ return (
+    <div className="translated-container">
+      <h3>النص المترجم:</h3>
+      {translatedText.length === 0 ? (
+        <p className="placeholder-text">سيظهر النص هنا بعد الترجمة...</p>
+      ) : (
+        <p className="translated-text">{combinedText}</p>
+      )}
+      <button className="reset-button" onClick={resetTranslatedText}>مسح الترجمات</button>
+      <div className="language-selector">
+        <label htmlFor="targetLanguage">اختر اللغة:</label>
+        <select 
+          id="targetLanguage"
+          value={targetLanguage}
+          onChange={(e) => setTargetLanguage(e.target.value)}
+        >
+          {languages.length > 0 ? (
+            languages.map(lang => (
+              <option key={lang.code} value={lang.code}>{lang.name}</option>
+            ))
+          ) : (
+            <option value="en">الإنجليزية</option>
+          )}
+        </select>
+      </div>
+      <button className="translate-button" onClick={handleTranslate} disabled={loading || !combinedText}>
+        {loading ? 'جارٍ الترجمة...' : 'ترجم النص'}
+      </button>
+      {translation && (
+        <div className="translated-result">
+          <h3>النص المترجم:</h3>
+          <p>{translation}</p>
         </div>
-        <button onClick={handleTranslate} disabled={loading || !combinedText}>
-            {loading ? 'جارٍ الترجمة...' : 'ترجم النص'}
-        </button>
-        {translation && (
-            <div style={{ marginTop: '20px' }}>
-            <h3>النص المترجم:</h3>
-            <p>{translation}</p>
-            </div>
-        )}
-        </div>
-    );
-    };
+      )}
+    </div>
+  );
+};
 
-    export default TranslatedTextDisplay;
+export default TranslatedTextDisplay;

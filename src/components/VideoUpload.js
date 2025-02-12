@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import useStore from '../store';
 import TranslatedTextDisplay from './TranslatedTextDisplay';
-import LibraTranslator from './LibraTranslator';
+import './VideoUpload.css'; // استيراد ملف CSS
+
 
 const VideoUpload = () => {
   const [file, setFile] = useState(null);
-  // استخدام appendTranslatedText
   const { appendTranslatedText } = useStore();
 
-    
-    
-    
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -27,7 +24,6 @@ const VideoUpload = () => {
         body: formData,
       });
       const data = await response.json();
-      // إضافة الترجمة الجديدة
       appendTranslatedText(data.translatedText);
     } catch (error) {
       console.error('Error uploading video:', error);
@@ -35,12 +31,11 @@ const VideoUpload = () => {
   };
 
   return (
-    <div>
-      <h2>رفع فيديو مسجل</h2>
-      <input type="file" accept="video/*" onChange={handleFileChange} />
-      <button onClick={handleUpload}>رفع وترجمة</button>
-            <TranslatedTextDisplay />
-            {/* <LibraTranslator /> */}
+    <div className="video-upload-container">
+      <h2 className="video-upload-title">رفع فيديو مسجل</h2>
+      <input type="file" accept="video/*" onChange={handleFileChange} className="file-input" />
+      <button onClick={handleUpload} className="upload-button">رفع وترجمة</button>
+      <TranslatedTextDisplay />
     </div>
   );
 };

@@ -1,8 +1,7 @@
-// LiveCamera.js
 import React, { useRef, useEffect } from 'react';
 import useStore from '../store';
 import TranslatedTextDisplay from './TranslatedTextDisplay';
-import './LiveCamera.css'; // استيراد ملف CSS الخارجي
+import './LiveCamera.css'; 
 
 const LiveCamera = () => {
     const videoRef = useRef(null);
@@ -12,6 +11,7 @@ const LiveCamera = () => {
     const streamRef = useRef(null);
 
     useEffect(() => {
+        appendTranslatedText("كيف حالك؟");          
         const startCamera = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -50,7 +50,6 @@ const LiveCamera = () => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        appendTranslatedText("أحبك يا عزيزتي");
 
         canvas.toBlob(async (blob) => {
             if (blob) {
@@ -71,7 +70,7 @@ const LiveCamera = () => {
             }
         }, 'image/jpeg');
     };
-
+    
     return (
         <div className="live-camera-container">
             <h2>ترجمة فورية</h2>

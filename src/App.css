@@ -16,7 +16,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #102E44;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -55,15 +55,48 @@ h1 {
   color: #333;
   margin-bottom: 20px;
 }
-
-nav {
+.navbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #102E44;
+  color: white;
+}
+.nav-list{
+  list-style: none;
+  display: flex;
+  gap: 40px;
+  font-size: 1.5rem;
+  margin-right: 30px;
+}
+a{
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  font-family: "Cairo", serif;
+}
+li{
+  transform: ease-in-out 2s ;
+  padding: 5px;
+  width: 100px;
+  text-align: center;
+}
+li:hover{
+  transform: scale(1.6);
+  border-radius: 30px;
+  background-color: #3c0202;
+}
+.nav {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin-bottom: 20px;
 }
-
-nav button {
+.logo-image{
+  border-radius: 30%;
+}
+.nav button {
   background: #007bff;
   color: white;
   border: none;
@@ -75,16 +108,36 @@ nav button {
   transition: background 0.3s ease-in-out;
 }
 
-nav button:hover {
+.nav button:hover {
   background: #282c34;
 }
 
-/* ضبط المحتوى ليظهر بشكل أنيق */
 .content {
-  background: white;
+  background: #102E44;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
   width: 100%;
+}
+@media (max-width: 600px) {
+ li{
+  max-width: 50px;
+  font-size: 1rem;
+ }
+ li:hover{
+  transform: scale(1);
+  background-color: transparent;
+ }
+ .navbar{
+  display: flex;
+    align-items: center;
+    padding: 0px;
+    background-color: #102E44;
+    color: white;
+    justify-content: space-between;
+ }
+ .nav-list{
+  margin-right: 0px;
+ }
 }

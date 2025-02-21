@@ -26,6 +26,7 @@ h2 {
 
 .translated-text {
     font-size: 1.2rem;
+    max-width: 600px;
     color: #444;
     margin-top: 10px;
     background: #fff;

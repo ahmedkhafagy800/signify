@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useStore from '../store';
 import TranslatedTextDisplay from './TranslatedTextDisplay';
-import './VideoUpload.css'; // استيراد ملف CSS
+import './VideoUpload.css';
 
 
 const VideoUpload = () => {

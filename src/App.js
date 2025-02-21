@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import VideoUpload from './components/VideoUpload';
 import LiveCamera from './components/LiveCamera';
 import './App.css';
-
+import newLogo from './signify.png';
 function App() {
   const [activeTab, setActiveTab] = useState('upload');
 
@@ -19,16 +19,31 @@ function App() {
 };
 
   return (
-    <div className="App">
-      <h1>مترجم لغة الإشارة</h1>
-      <nav>
-        <button onClick={() => setActiveTab('upload')}>رفع فيديو</button>
-        <button onClick={() => setActiveTab('live')}>كاميرا مباشرة</button>
-      </nav>
-      <div className="content">
-        {renderContent()}
-      </div>
+    <div>
+          <nav className='navbar'>
+        <img src={newLogo} className="logo-image" alt="Website Logo" width="150" />
+        <ul className='nav-list'>
+          <li><a href="https://www.signify.com/">القاموس</a></li>
+          <li><a href="https://www.signify.com/learn">حول</a></li>
+          </ul>
+          </nav>
+          <div className="App">
+          {/* <header> */}
+            {/* <img src={newLogo} className="logo-image" alt="Website Logo" width="150" /> */}
+            {/* <h1>signify</h1> */}
+          {/* </header> */}
+          
+            <h1>مترجم لغة الإشارة</h1>
+            <nav className='nav'>
+              <button onClick={() => setActiveTab('upload')}>رفع فيديو</button>
+              <button onClick={() => setActiveTab('live')}>كاميرا مباشرة</button>
+            </nav>
+            <div className="content">
+              {renderContent()}
+            </div>
+        </div>
     </div>
+
   );
 }
 

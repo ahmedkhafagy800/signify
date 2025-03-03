@@ -5,7 +5,7 @@
     const TranslatedTextDisplay = () => {
     const { translatedText, resetTranslatedText } = useStore();
     const combinedText = translatedText.join(' '); 
-    const combinedText = translatedText.join(' '); 
+    // const combinedText = translatedText.join(' '); 
 
     const [targetLanguage, setTargetLanguage] = useState('en'); 
     const [translation, setTranslation] = useState('');

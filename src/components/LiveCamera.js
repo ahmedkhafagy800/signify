@@ -11,7 +11,7 @@ const LiveCamera = () => {
     const streamRef = useRef(null);
 
     useEffect(() => {
-        appendTranslatedText("كيف حالك؟");          
+        // appendTranslatedText("كيف حالك؟");          
         const startCamera = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -25,7 +25,7 @@ const LiveCamera = () => {
         };
 
         startCamera();
-        intervalId.current = setInterval(captureAndSendFrame, 1000);
+        intervalId.current = setInterval(captureAndSendFrame, 500);
 
         return () => {
             if (streamRef.current) {
@@ -54,16 +54,18 @@ const LiveCamera = () => {
         canvas.toBlob(async (blob) => {
             if (blob) {
                 const formData = new FormData();
-                formData.append('frame', blob, 'frame.jpg');
-
+                formData.append('file', blob, 'frame.jpg'); 
+                for (let pair of formData.entries()) {
+                    console.log(pair[0], pair[1]); 
+                }
                 try {
-                    const response = await fetch('/api/translate', {
+                    const response = await fetch('http://127.0.0.1:8000/predict', {
                         method: 'POST',
                         body: formData,
                     });
                     const data = await response.json();
-                    appendTranslatedText(data.translatedText);
-                    appendTranslatedText("كيف حالك؟");
+                    appendTranslatedText(data.fingers_count);
+                    // appendTranslatedText("كيف حالك؟");
                 } catch (error) {
                     console.error('Error sending frame:', error);
                 }

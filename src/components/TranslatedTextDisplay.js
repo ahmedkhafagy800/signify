@@ -3,7 +3,7 @@
     import useStore from '../store';
     import './TranslatedTextDisplay.css';
     const TranslatedTextDisplay = () => {
-    const { translatedText, resetTranslatedText } = useStore();
+    const { translatedText, resetTranslatedText ,popTranslatedText} = useStore();
     const combinedText = translatedText.join(' '); 
     // const combinedText = translatedText.join(' '); 
 
@@ -59,7 +59,8 @@ return (
       ) : (
         <p className="translated-text">{combinedText}</p>
       )}
-      <button className="reset-button" onClick={resetTranslatedText}>مسح الترجمات</button>
+      <button className="pop-button but" onClick={popTranslatedText} disabled={translatedText.length === 0}>حذف اخر كلمه</button>
+      <button className="reset-button but" onClick={resetTranslatedText} disabled={translatedText.length === 0}>مسح الترجمات</button>
       <div className="language-selector">
        <select 
   id="targetLanguage"

@@ -82,11 +82,7 @@ li{
   width: 100px;
   text-align: center;
 }
-li:hover{
-  transform: scale(1.6);
-  border-radius: 30px;
-  background-color: #3c0202;
-}
+
 .nav {
   display: flex;
   justify-content: center;
@@ -111,15 +107,29 @@ li:hover{
 .nav button:hover {
   background: #282c34;
 }
+button {
+  background-color: #2980b9;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 5px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
+button:hover {
+  background-color: #1f618d;
+}
 .content {
   background: #102E44;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  max-width:90%;
   width: 100%;
-}
+  margin: auto;}
 @media (max-width: 600px) {
  li{
   max-width: 50px;

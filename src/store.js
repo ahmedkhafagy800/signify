@@ -10,6 +10,7 @@ const useStore = create((set) => ({
       return { translatedText: [...state.translatedText, text] };
     }),
   resetTranslatedText: () => set({ translatedText: [] }),
+  popTranslatedText: () => set((state) => ({ translatedText: state.translatedText.slice(0, -1) })),
 }));
 
 export default useStore;

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import VideoUpload from './components/VideoUpload';
 import LiveCamera from './components/LiveCamera';
+import SignLanguageTable from './components/SignLanguageTable';
 import './App.css';
 import newLogo from './signify.png';
 function App() {
@@ -13,6 +14,8 @@ function App() {
       return <VideoUpload />;
     case 'live':
       return <LiveCamera key="live" />;
+    case 'dec':
+      return <SignLanguageTable key="dec" />;
     default:
       return null;
   }
@@ -23,7 +26,7 @@ function App() {
           <nav className='navbar'>
         <img src={newLogo} className="logo-image" alt="Website Logo" width="150" />
         <ul className='nav-list'>
-          <li><a href="https://www.signify.com/">القاموس</a></li>
+          <li><button className='btn' href=""onClick={() => setActiveTab('dec')}>القاموس</button></li>
           <li><a href="https://www.signify.com/learn">حول</a></li>
           </ul>
           </nav>

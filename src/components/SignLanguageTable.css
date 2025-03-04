@@ -40,7 +40,7 @@
 .table tbody tr:nth-child(odd){
     background:#1e1d25;
 } */
-/* General styles */
+
 
 .table-container{
 display: flex;
@@ -55,7 +55,7 @@ display: flex;
     margin: auto;
     width: 80%;
 }
-/* Search input */
+
 .search-input {
     width: 100%;
 
@@ -75,7 +75,7 @@ display: flex;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* Table styling */
+
 .table {
     width: 100%;
     max-width: 90%;
@@ -87,7 +87,7 @@ display: flex;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Table headers */
+
 .table thead {
     background-color: #007bff;
     color: white;
@@ -108,7 +108,6 @@ display: flex;
     transition: 0.3s ease-in-out;
 }
 
-/* Image styling */
 .table img {
     width: 120px;
     height: auto;
@@ -120,7 +119,7 @@ display: flex;
     transform: scale(1.1);
 }
 
-/* Responsive design */
+
 @media (max-width: 768px) {
     .table {
         width: 100%;

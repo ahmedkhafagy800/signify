@@ -29,6 +29,7 @@
 }
 
 .nav-links {
+    text-align: right;
     list-style: none;
     display: flex;
     gap: 20px;
@@ -60,8 +61,7 @@
     background-color: white;
     margin: 4px 0;
     transition: 0.3s;
-    direction: rtl;
-}
+text-align: right;}
 
 .hamburger.active .bar:nth-child(1) {
     transform: translateY(8px) rotate(45deg);

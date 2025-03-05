@@ -9,14 +9,14 @@ const SignLanguageTable = () => {
     setSigns(signsData);
   }, []);
 
-  // تصفية العلامات بناءً على البحث
+  
   const filteredSigns = signs.filter((sign) =>
     sign.translation.includes(searchTerm.toUpperCase())
   );
 
   return (
     <div className="table-container">
-      {/* حقل البحث */}
+      
       <input
               type="text"
         className="search-input"

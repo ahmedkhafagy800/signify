@@ -1,8 +1,6 @@
 [
-    { "id": 3, "image": "/imgs/Ain_1.jpg", "translation": "s" },
-    { "id": 1, "image": "/imgs/Ain_104.jpg", "translation": "2" },
-    { "id": 2, "image": "/imgs/Ain_100.jpg", "translation": "r" },
-    { "id": 4, "image": "/imgs/Ain_101.jpg", "translation": "fds" },
-    { "id": 5, "image": "/imgs/Ain_105.jpg", "translation": "fd" },
-    { "id": 6, "image": "/imgs/Ain_106.jpg", "translation": "fs" }
+    { "id": 3, "image": "/imgs/A.jpeg", "translation": "A" },
+    { "id": 1, "image": "/imgs/B.jpeg", "translation": "B" },
+    { "id": 2, "image": "/imgs/S.jpeg", "translation": "S" }
+  
 ]

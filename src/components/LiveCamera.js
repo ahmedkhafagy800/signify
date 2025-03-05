@@ -11,7 +11,7 @@ const LiveCamera = () => {
     const streamRef = useRef(null);
 
     useEffect(() => {
-        // appendTranslatedText("كيف حالك؟");          
+        appendTranslatedText("كيف حالك؟");          
         const startCamera = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -75,7 +75,7 @@ const LiveCamera = () => {
     
     return (
         <div className="live-camera-container">
-            <h2>ترجمة فورية</h2>
+            <h2>📷ترجمة فورية</h2>
             <video ref={videoRef} autoPlay className="video-stream" />
             <canvas ref={canvasRef} style={{ display: 'none' }} />
             <TranslatedTextDisplay />

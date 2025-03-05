@@ -3,7 +3,7 @@ import signsData from "./signs.json";
 import "./SignLanguageTable.css";
 const SignLanguageTable = () => {
   const [signs, setSigns] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // حالة لتخزين قيمة البحث
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   useEffect(() => {
     setSigns(signsData);
@@ -11,7 +11,7 @@ const SignLanguageTable = () => {
 
   // تصفية العلامات بناءً على البحث
   const filteredSigns = signs.filter((sign) =>
-    sign.translation.includes(searchTerm)
+    sign.translation.includes(searchTerm.toUpperCase())
   );
 
   return (

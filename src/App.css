@@ -3,11 +3,10 @@
 .App {
   text-align: center;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* 
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -38,7 +37,7 @@
     transform: rotate(360deg);
   }
 }
-
+*/
 .App {
   text-align: center;
   font-family: "Cairo", serif;
@@ -47,29 +46,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-}
+} 
 
 h1 {
   font-size: 2rem;
   color: #333;
   margin-bottom: 20px;
 }
-.navbar{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #102E44;
-  color: white;
-}
-.nav-list{
-  list-style: none;
-  display: flex;
-  gap: 40px;
-  font-size: 1.5rem;
-  margin-right: 30px;
-}
+/* 
+
+
 a{
   text-decoration: none;
   color: white;
@@ -81,47 +67,12 @@ li{
   padding: 5px;
   width: 100px;
   text-align: center;
-}
+} */
 
-.nav {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-.logo-image{
-  border-radius: 30%;
-}
-.nav button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-    font-family: "Cairo", serif;
-  font-size: 1rem;
-  transition: background 0.3s ease-in-out;
-}
 
-.nav button:hover {
-  background: #282c34;
-}
-button {
-  background-color: #2980b9;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  margin: 10px 5px;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
 
-button:hover {
-  background-color: #1f618d;
-}
+
+
 .content {
   background: #102E44;
   padding: 20px;
@@ -130,24 +81,3 @@ button:hover {
   max-width:90%;
   width: 100%;
   margin: auto;}
-@media (max-width: 600px) {
- li{
-  max-width: 50px;
-  font-size: 1rem;
- }
- li:hover{
-  transform: scale(1);
-  background-color: transparent;
- }
- .navbar{
-  display: flex;
-    align-items: center;
-    padding: 0px;
-    background-color: #102E44;
-    color: white;
-    justify-content: space-between;
- }
- .nav-list{
-  margin-right: 0px;
- }
-}

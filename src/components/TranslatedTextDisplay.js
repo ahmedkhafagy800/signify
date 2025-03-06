@@ -53,7 +53,7 @@
 
 return (
     <div className="translated-container">
-      <h3>النص المترجم:</h3>
+      <h3 className='label'>:النص المترجم</h3>
       {translatedText.length === 0 ? (
         <p className="placeholder-text">سيظهر النص هنا بعد الترجمة...</p>
       ) : (
@@ -62,6 +62,7 @@ return (
       <button className="pop-button but" onClick={popTranslatedText} disabled={translatedText.length === 0}>حذف اخر كلمه</button>
       <button className="reset-button but" onClick={resetTranslatedText} disabled={translatedText.length === 0}>مسح الترجمات</button>
       <div className="language-selector">
+        <label htmlFor="targetLanguage" className='label'> : اختر اللغة </label>
        <select 
   id="targetLanguage"
   value={targetLanguage}
@@ -76,7 +77,6 @@ return (
     )}
       </select>
        
-    <label htmlFor="targetLanguage"> : اختر اللغة </label>
 
       </div>
       <button className="translate-button" onClick={handleTranslate} disabled={loading || !combinedText}>

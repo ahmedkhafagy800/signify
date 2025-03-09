@@ -10,12 +10,13 @@
     background: #fff;
     text-align: center;
     font-family: "Cairo", serif;
-    width: 100%;
+    width: 80%;
 }
 
 .placeholder-text {
     color: #888;
     font-style: italic;
+
 }
 
 .translated-text {
@@ -53,11 +54,21 @@
 .language-selector {
     margin: 15px 0;
 }
-
+.label{
+    display: block;
+    margin: 20px auto;
+        padding: 15px;
+        border-radius: 8px;
+        background: #f1f1f1;
+        font-size: 30px;
+        font-weight: bold;
+        width: auto;
+}
 .language-selector select {
     padding: 8px;
     font-size: 16px;
     border-radius: 5px;
+    width: 80%;
     border: 1px solid #ccc;
 }
 
@@ -68,4 +79,10 @@
     background: #f1f1f1;
     font-size: 30px;
     font-weight: bold;
+}
+
+@media (max-width: 768px) {
+
+    .translated-container {
+        font-size: 30px;}
 }

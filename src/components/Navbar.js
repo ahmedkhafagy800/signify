@@ -1,11 +1,10 @@
-
-  import React, { useState } from "react";
-  import { Link } from "react-router-dom";
-  import logo from "../assets/signifybg.png";
-
-  import "./Navbar.css";
-
-  const Navbar = () => {
+// Navbar.js
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import logo from "../assets/signifybg.png";
+import "./Navbar.css";
+import Switch from "./Switch";
+const Navbar = ({ isDarkMode, onToggleDarkMode }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -19,22 +18,37 @@
         </Link>
       </div>
 
-      {/* Desktop Navigation */}
-      <ul className={`nav-links ${isOpen ? "open" : ""}`}>
-        <li>
-          <Link to="/dictionary" className="dictionary-link">
-            📖القاموس
-          </Link>
+      <ul className={`nav-links   ${isOpen ? "open" : ""}`}>
+       <li>
+        <Link to="/dictionary" className="btn-17">
+          <span className="text-container">
+            <span className="text">📖 القاموس</span>
+          </span>
+        </Link>
+      </li>
+
+        <li >
+          <Link to="/upload" className="btn-17 ">
+            <span className="text-container">
+            <span className="text"> 📤رفع فيديو</span>
+          </span>
+           </Link>
         </li>
-        <li>
-            <Link to="/upload" className="dictionary-link">📤رفع فيديو</Link>
+        <li >
+          <Link to="/live" className="btn-17">
+            <span className="text-container">
+            <span className="text"> 📷كاميرا مباشرة</span>
+          </span>
+           </Link>
         </li>
-        <li>
-          <Link to="/live" className="dictionary-link">📷كاميرا مباشرة</Link>
+
+        <li >
+          {/* <input class="l" type="checkbox" onClick={onToggleDarkMode}/> */}
+          <Switch isDarkMode={isDarkMode} onToggle={onToggleDarkMode} />
+          
         </li>
       </ul>
 
-      {/* Styled Hamburger Icon (Mobile) */}
       <div
         className={`hamburger ${isOpen ? "active" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
@@ -45,6 +59,6 @@
       </div>
     </nav>
   );
-  };
+};
 
-  export default Navbar;
+export default Navbar;

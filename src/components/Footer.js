@@ -11,6 +11,7 @@ return (
         <Link to="/contact">Contact</Link>
         <Link to="/privacy-policy">Privacy Policy</Link>
         </nav>
+        
     </div>
     </footer>
 );

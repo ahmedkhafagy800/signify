@@ -96,7 +96,9 @@
         -ms-border-radius: 3px;
         -o-border-radius: 3px;
 }
-
+    .table-container{
+        width: 100%;
+    }
     .search-input {
         width: 100%;
     }
@@ -230,7 +232,7 @@
     animation: shake 0.5s ease-in-out;
 } */
 
-@keyframes glitch {
+/* @keyframes glitch {
     0% {
         transform: none;
         opacity: 1;
@@ -295,7 +297,7 @@
         transform: none;
         opacity: 1;
     }
-}
+} */
 
 .input:not(:placeholder-shown) {
     animation: glitch 1s linear infinite;

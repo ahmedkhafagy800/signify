@@ -9,9 +9,9 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: auto;
-    width: 95%;
-    gap: 20px;
-}
+    width: 100%;
+    gap: 30px;
+}   
 
 .video-upload-title {
     font-size: 4rem;
@@ -243,7 +243,7 @@
     --progress: -102%;
 }
 .btn-17:nth-child(3) {
-margin-right: 18px;
+margin-bottom: 18px;
 }
 @media (max-width: 768px) {
     .video-upload-container {

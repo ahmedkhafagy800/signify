@@ -1,6 +1,12 @@
 [
     { "id": 3, "image": "/imgs/A.jpeg", "translation": "A" },
     { "id": 1, "image": "/imgs/B.jpeg", "translation": "B" },
-    { "id": 2, "image": "/imgs/S.jpeg", "translation": "S" }
-  
+    { "id": 2, "image": "/imgs/S.jpeg", "translation": "S" },
+    { "id": 4, "image": "/imgs/A.jpeg", "translation": "m" },
+    { "id":5, "image": "/imgs/B.jpeg", "translation": "n" },
+    { "id": 6, "image": "/imgs/S.jpeg", "translation": "o" },
+    { "id": 7, "image": "/imgs/A.jpeg", "translation": "k" },
+    { "id": 8, "image": "/imgs/B.jpeg", "translation": "e" },
+    { "id": 9, "image": "/imgs/S.jpeg", "translation": "x" }
+
 ]

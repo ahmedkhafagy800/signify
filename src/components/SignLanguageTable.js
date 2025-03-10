@@ -11,7 +11,7 @@ const SignLanguageTable = () => {
 
   
   const filteredSigns = signs.filter((sign) =>
-    sign.translation.includes(searchTerm.toUpperCase())
+    sign.translation.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

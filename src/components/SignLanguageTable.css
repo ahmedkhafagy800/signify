@@ -1,74 +1,44 @@
-.table-container{
-display: flex;
+.table-container {
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 20px;
-    /* background-color: #f4f4f4; */
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin: auto;
-    gap:20px;
-    width: 80%;
+    gap: 20px;
+    width: 50%;
+    overflow: hidden;
 }
-
-/* .search-input {
-    width: 100%;
-
-    text-align: right;
-    max-width: 30%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    outline: none;
-    transition: all 0.3s ease-in-out;
-} */
-
-/* .search-input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-} */
-
 
 .table {
     width: 100%;
-    max-width: 50%;
     border-collapse: collapse;
-    background-color: white;
-    border-radius: 80px;
+    /* background-color: white; */
+    border-radius: 10px;
     overflow: hidden;
-    
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: table;
 }
-
 
 .table thead {
     background-color: #007bff;
     color: white;
     font-size: 18px;
+    position: sticky;
+    top: 0;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .table th,
 .table td {
     padding: 12px;
-    
     text-align: center;
     border-bottom: 1px solid #ddd;
-}
-
-.table tr:hover {
-        transform: translate(-4px, -4px);
-        background-color: rgba(33, 33, 33,.5);
-        color: white;
-        box-shadow: 12px 12px 0 #ffff;
-        -webkit-transform: translate(-4px, -4px);
-        -moz-transform: translate(-4px, -4px);
-        -ms-transform: translate(-4px, -4px);
-        -o-transform: translate(-4px, -4px);
-   
 }
 
 .table img {
@@ -80,12 +50,46 @@ display: flex;
 
 .table img:hover {
     transform: scale(1.1);
-    -webkit-transform: scale(1.1);
-    -moz-transform: scale(1.1);
-    -ms-transform: scale(1.1);
-    -o-transform: scale(1.1);
 }
 
+.table tbody tr:hover {
+    background-color: wheat;
+    color: #000;
+}
+
+/* جعل الجدول يعرض فقط 4 صفوف ويكون قابلًا للتمرير */
+.table-container {
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.table tbody {
+    display: block;
+    max-height: 350px;
+    overflow-y: auto;
+    color: wheat;
+    width: 100%;
+    scrollbar-width: auto;
+    /* للفايرفوكس */
+    /* scrollbar-color: #fff #212121;         */
+}
+
+.table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table tbody::-webkit-scrollbar {
+    width: 8px;
+    /* عرض شريط التمرير */
+}
+
+.table tbody::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    /* لون الخلفية */
+    border-radius: 10px;
+}
 
 @media (max-width: 768px) {
     .table {

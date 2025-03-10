@@ -25,7 +25,7 @@ const SignLanguageTable = () => {
         onChange={(e) => setSearchTerm(e.target.value)}
       /> */}
 
-{/* <div class="search-container">
+<div class="search-container">
   <div class="search-bar">
     <input type="text" class="search-input" placeholder="Search..." />
     <div class="search-icon">
@@ -43,10 +43,10 @@ const SignLanguageTable = () => {
     </div>
   </div>
   <div class="glow"></div>
-</div> */}
+</div>
 
 
-<div class="input-container">
+{/* <div class="input-container">
   <input
     class="input"
     name="text"
@@ -55,7 +55,7 @@ const SignLanguageTable = () => {
     value={searchTerm}
     onChange={(e) => setSearchTerm(e.target.value)}
   />
-</div>
+</div> */}
 
       <table className="table">
         <thead>

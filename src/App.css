@@ -96,7 +96,7 @@ li{
 
 .dark-mode {
   background-color: #171717;
- 
+ color: white !important;
 }
 
 
@@ -113,7 +113,7 @@ li{
 
 
 .content {
-  background: #0a2a43;
+  /* background: #0a2a43; */
   padding: 20px;
   border-radius: 30px;
   box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);

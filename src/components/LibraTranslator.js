@@ -29,7 +29,7 @@ const LibraTranslator = () => {
   return (
     <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc' }}>
       <h3>النص الأصلي (العربي):</h3>
-      <p>{currentText || 'لا يوجد نص للترجمة'}</p>
+      <p className='translation-result'>{currentText || 'لا يوجد نص للترجمة'}</p>
 
         <div style={{ margin: '10px 0' }}>
         <label htmlFor="targetLanguage">اختر اللغة:</label>
@@ -53,7 +53,7 @@ const LibraTranslator = () => {
         {translation && (
         <div style={{ marginTop: '20px' }}>
             <h3>النص المترجم:</h3>
-            <p>{translation}</p>
+            <p className='translation-result'>{translation}</p>
         </div>
         )}
     </div>

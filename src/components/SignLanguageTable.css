@@ -57,7 +57,6 @@
     color: #000;
 }
 
-/* جعل الجدول يعرض فقط 4 صفوف ويكون قابلًا للتمرير */
 .table-container {
     max-height: 500px;
     overflow: hidden;
@@ -70,7 +69,6 @@
     color: wheat;
     width: 100%;
     scrollbar-width: auto;
-    /* للفايرفوكس */
     /* scrollbar-color: #fff #212121;         */
 }
 
@@ -82,12 +80,10 @@
 
 .table tbody::-webkit-scrollbar {
     width: 8px;
-    /* عرض شريط التمرير */
 }
 
 .table tbody::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
-    /* لون الخلفية */
     border-radius: 10px;
 }
 

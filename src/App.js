@@ -50,7 +50,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/live" element={<LiveCamera />} />
               <Route path="/dictionary" element={<SignLanguageTable />} />
-              <Route path="/" element={<VideoUpload />} />
+              <Route path="/" element={<LiveCamera />} />
             </Routes>
           </div>
           <Footer />

@@ -16,8 +16,8 @@ const SignLanguageTable = () => {
 
   return (
     <div className="table-container">
-      
-      {/* <input
+{/*       
+      <input
               type="text"
         className="search-input"
         placeholder="ابحث عن .."
@@ -27,7 +27,9 @@ const SignLanguageTable = () => {
 
 <div class="search-container">
   <div class="search-bar">
-    <input type="text" class="search-input" placeholder="Search..." />
+          <input type="text" class="search-input" placeholder="Search..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}                    />
     <div class="search-icon">
       <svg
         xmlns="http://www.w3.org/2000/svg"

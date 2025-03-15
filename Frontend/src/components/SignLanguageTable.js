@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import signsData from "./signs.json";
 import "./SignLanguageTable.css";
-const SignLanguageTable = () => {
+const SignLanguageTable = ({ isDarkMode, onToggleDarkMode }) => {
   const [signs, setSigns] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); 
 
@@ -16,14 +16,7 @@ const SignLanguageTable = () => {
 
   return (
     <div className="table-container">
-{/*       
-      <input
-              type="text"
-        className="search-input"
-        placeholder="ابحث عن .."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      /> */}
+
 
 <div class="search-container">
   <div class="search-bar">
@@ -48,27 +41,17 @@ const SignLanguageTable = () => {
 </div>
 
 
-{/* <div class="input-container">
-  <input
-    class="input"
-    name="text"
-    type="text"
-    placeholder="ابحث عن .."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-  />
-</div> */}
 
-      <table className="table">
+      <table className="table ">
         <thead>
           <tr>
             <th>الصورة</th>
             <th>الترجمة</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody >
           {filteredSigns.map((sign) => (
-            <tr key={sign.id}>
+            <tr key={sign.id} className={`${isDarkMode ? "dark-mode-row" : ""}`}>
               <td>
                 <img
                   src={process.env.PUBLIC_URL + sign.image}

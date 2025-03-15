@@ -20,7 +20,7 @@
 .loader-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .fade-out {
@@ -96,7 +96,9 @@ li{
 
 .dark-mode {
   background-color: #171717;
- color: white !important;
+color: white !important;
+box-shadow: 0px 48px 35px -48px rgba(38, 37, 37, 0.755) !important;
+
 }
 
 
@@ -126,10 +128,21 @@ li{
   -o-border-radius: 30px;
   display: flex;
   gap: 1%;
+  
 }
 @media (max-width: 768px) {
   .content {
     flex-direction: column;
       max-width: 90%;
   }
+    .loader-image {
+        object-fit: unset;
+      width: 100%;
+      height: 100%;
+    }
+  
+    .loader-container {
+      background: rgba(255, 255, 255, 0.9);
+      /* تقليل التأثير على الرؤية */
+    }
 }

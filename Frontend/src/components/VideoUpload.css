@@ -10,6 +10,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: auto;
     width: 100%;
+    color:black;
     gap: 30px;
 }   
 
@@ -77,6 +78,7 @@
 {
     display: flex;
     align-items: center;
+    
     justify-content: center;
 }
 
@@ -96,34 +98,10 @@
     /* color: #FFFFFF; */
     font-weight: 500;
 }
-.btn-17 {
-    position: relative;
-    border-radius: 99rem;
-    border-width: 2px;
-    padding: 0.8rem 3rem;
-    z-index: 0;
-    background-color: #212121;
-    color: #fff;
-    font-weight: 900;
-    cursor: pointer;
-    text-transform: uppercase;
-    overflow: hidden;
-    transition: background 0.3s ease-in-out;
-}
 
-.btn-17:hover {
-    background: #fff;
-    color: #212121;
-}
 
-.btn-17 .text {
-    position: relative;
-    transition: transform 0.3s ease-in-out;
-}
 
-.btn-17:hover .text {
-    transform: translateY(-5px);
-}
+
 
 @media (max-width: 768px) {
     .video-upload-container {

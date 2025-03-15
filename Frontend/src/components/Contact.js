@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Contact.css";
 import y from "../assets/tst.jpg"
-const Contact = () => {
+const Contact = ({ isDarkMode, onToggleDarkMode }) => {
     return (
        <div class="container">
             <div class="card-client">

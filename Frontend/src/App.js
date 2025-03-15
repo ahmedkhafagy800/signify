@@ -46,11 +46,11 @@ function App() {
           <Navbar isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode} />
           <div className="content">
             <Routes>
-              <Route path="/upload" element={<VideoUpload />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/live" element={<LiveCamera />} />
-              <Route path="/dictionary" element={<SignLanguageTable />} />
-              <Route path="/" element={<LiveCamera />} />
+              <Route path="/upload" element={<VideoUpload isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode} />} />
+              <Route path="/contact" element={<Contact isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
+              <Route path="/live" element={<LiveCamera isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
+              <Route path="/dictionary" element={<SignLanguageTable isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
+              <Route path="/" element={<LiveCamera isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
             </Routes>
           </div>
           <Footer />

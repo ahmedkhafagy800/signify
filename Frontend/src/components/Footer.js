@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Footer.css";
 
-const Footer = () => {
+const Footer = ({ isDarkMode, onToggleDarkMode }) => {
 return (
     <footer className="footer">
     <div className="footer-content" id="footer">

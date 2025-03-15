@@ -3,7 +3,7 @@ import useStore from '../store';
 import './VideoUpload.css';
 import TranslatedTextDisplay from './TranslatedTextDisplay';
 
-const VideoUpload = () => {
+const VideoUpload = ({ isDarkMode, onToggleDarkMode }) => {
   const [file, setFile] = useState(null);
   const { appendTranslatedText } = useStore();
 
@@ -30,8 +30,7 @@ const VideoUpload = () => {
   };
 
   return (
-    <div className="video-upload-container">
-      {/* <h2 className="video-upload-title">رفع فيديو مسجل</h2> */}
+    <div className={`video-upload-container${isDarkMode ? ' dark-mode' : ''}`}>
 <div className='upload'>
   <label htmlFor="file" className="custom-file-upload">
     <div className="icon">
@@ -40,24 +39,14 @@ const VideoUpload = () => {
       </svg>
     </div>
     <div className="text">
-      {/* <span className='input-text'>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="30"
-          height="30"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-                style={{
-                  marginRight: "8px",                  
-                }}
-        >
-          <path d="M17 10.5V7c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2v-3.5l4 4v-11l-4 4z" />
-        </svg>  
-        اختر فيديو للترجمة
-      </span> */}
+     
         <span className='input-text'>
-      <i className="fas fa-video" style={{ marginRight: "8px" }}></i>
-      اختر فيديو للترجمة
+              <svg xmlns="http://www.w3.org/2000/svg" width="40"
+                height="30" viewBox="0 -5 24 24" fill="none"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-video"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" /><rect x="2" y="6" width="14" height="12" rx="2" />
+              </svg>     اضغط لاختيار فيديو
     </span>
 
     </div>
@@ -75,14 +64,14 @@ const VideoUpload = () => {
     </div>
   )}
 
-  <button className="btn-17" onClick={handleUpload}>
+  <button className={`btn-17 ${isDarkMode ?'dark-mode-button' : ''}`} onClick={handleUpload}>
     <span className="text-container">
-      <span className="text">🎬 رفع وترجمة</span>
+            <span className={`text`}>🎬 رفع وترجمة</span>
     </span>
   </button>
 </div>
 
-      <TranslatedTextDisplay />
+      <TranslatedTextDisplay isDarkMode={isDarkMode} onToggle={onToggleDarkMode}/>
 
     </div>
   );

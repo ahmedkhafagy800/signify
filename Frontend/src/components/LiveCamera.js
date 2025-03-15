@@ -1,45 +1,55 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import useStore from '../store';
 import TranslatedTextDisplay from './TranslatedTextDisplay';
 import './LiveCamera.css'; 
 
-const LiveCamera = () => {
+const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const { appendTranslatedText } = useStore();
-    const intervalId = useRef(null);
     const streamRef = useRef(null);
+    const intervalId = useRef(null);    
+    const [facingMode, setFacingMode] = useState('user'); 
 
     useEffect(() => {
         appendTranslatedText("كيف حالك؟");          
-        const startCamera = async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                streamRef.current = stream;
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                }
-            } catch (error) {
-                console.error('Error accessing camera:', error);
-            }
-        };
-
-        startCamera();
+        startCamera(facingMode);
         intervalId.current = setInterval(captureAndSendFrame, 500);
 
         return () => {
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach((track) => track.stop());
-                streamRef.current = null;
-            }
-            if (videoRef.current) {
-                videoRef.current.srcObject = null;
-                videoRef.current.removeAttribute("src");
-                videoRef.current.load();
-            }
+            stopCamera();
             clearInterval(intervalId.current);
         };
-    }, []);
+    }, [facingMode]); 
+    const startCamera = async (mode) => {
+        stopCamera(); 
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: mode }
+            });
+            streamRef.current = stream;
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            }
+        } catch (error) {
+            console.error('Error accessing camera:', error);
+        }
+    };
+
+    const stopCamera = () => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop());
+            streamRef.current = null;
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+    };
+
+    const toggleCamera = () => {
+        setFacingMode((prevMode) => (prevMode === 'user' ? 'environment' : 'user'));
+    };
 
     const captureAndSendFrame = async () => {
         if (!videoRef.current) return;
@@ -54,15 +64,10 @@ const LiveCamera = () => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         ctx.restore();
 
-        
-
         canvas.toBlob(async (blob) => {
             if (blob) {
                 const formData = new FormData();
                 formData.append('file', blob, 'frame.jpg'); 
-                for (let pair of formData.entries()) {
-                    console.log(pair[0], pair[1]); 
-                }
                 try {
                     const response = await fetch('http://127.0.0.1:8000/predict', {
                         method: 'POST',
@@ -70,7 +75,6 @@ const LiveCamera = () => {
                     });
                     const data = await response.json();
                     appendTranslatedText(data.fingers_count);
-                    // appendTranslatedText("كيف حالك؟");
                 } catch (error) {
                     console.error('Error sending frame:', error);
                 }
@@ -80,10 +84,14 @@ const LiveCamera = () => {
     
     return (
         <div className="live-camera-container">
-            {/* <h2>📷ترجمة فورية</h2> */}
-            <video ref={videoRef} autoPlay className="video-stream" />
+            <div className="camera-frame">
+                <button className="toggle-camera-btn" onClick={toggleCamera}>
+                    🔄
+                </button>
+                <video ref={videoRef} autoPlay className="video-stream" />
+            </div>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-            <TranslatedTextDisplay />
+            <TranslatedTextDisplay isDarkMode={isDarkMode} onToggle={onToggleDarkMode}/>
         </div>
     );
 };

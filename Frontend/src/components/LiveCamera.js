@@ -10,17 +10,20 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
     const streamRef = useRef(null);
     const intervalId = useRef(null);    
     const [facingMode, setFacingMode] = useState('user'); 
+    const [currentAction, setCurrentAction] = useState(""); // Store current action
 
     useEffect(() => {
         appendTranslatedText("كيف حالك؟");          
+        setCurrentAction("كيف حالك؟");  // Set initial action
         startCamera(facingMode);
-        intervalId.current = setInterval(captureAndSendFrame, 500);
+        intervalId.current = setInterval(captureAndSendFrame, 200);
 
         return () => {
             stopCamera();
             clearInterval(intervalId.current);
         };
     }, [facingMode]); 
+
     const startCamera = async (mode) => {
         stopCamera(); 
 
@@ -58,12 +61,8 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
-        ctx.save();
-        ctx.translate(canvas.width, 0); 
-        ctx.scale(-1, 1); 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-
+    
         canvas.toBlob(async (blob) => {
             if (blob) {
                 const formData = new FormData();
@@ -74,16 +73,18 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
                         body: formData,
                     });
                     const data = await response.json();
-                    appendTranslatedText(data.fingers_count);
+                    appendTranslatedText(data.sign);
+                    setCurrentAction(data.sign); // Update current action
                 } catch (error) {
                     console.error('Error sending frame:', error);
                 }
             }
         }, 'image/jpeg');
     };
-    
+
     return (
-        <div className="live-camera-container">
+        <div className="live-camera-container">{/*}
+            <h2>الحركة الحالية: {currentAction || "لا يوجد حركة"}</h2> {/* Display current action */} 
             <div className="camera-frame">
                 <button className="toggle-camera-btn" onClick={toggleCamera}>
                     🔄

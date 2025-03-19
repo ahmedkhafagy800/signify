@@ -10,11 +10,11 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
     const streamRef = useRef(null);
     const intervalId = useRef(null);    
     const [facingMode, setFacingMode] = useState('user'); 
-    const [currentAction, setCurrentAction] = useState(""); // Store current action
+    // const [currentAction, setCurrentAction] = useState(""); // Store current action
 
     useEffect(() => {
         appendTranslatedText("كيف حالك؟");          
-        setCurrentAction("كيف حالك؟");  // Set initial action
+        // setCurrentAction("كيف حالك؟");  // Set initial action
         startCamera(facingMode);
         intervalId.current = setInterval(captureAndSendFrame, 200);
 
@@ -74,7 +74,7 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
                     });
                     const data = await response.json();
                     appendTranslatedText(data.sign);
-                    setCurrentAction(data.sign); // Update current action
+                    // setCurrentAction(data.sign); // Update current action
                 } catch (error) {
                     console.error('Error sending frame:', error);
                 }

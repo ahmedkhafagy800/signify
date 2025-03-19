@@ -12,15 +12,28 @@ const AddSignForm = ({ onSignAdded }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [preview, setPreview] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     
     if (type === "file") {
+      const selectedFile = files[0];
       setFormData({
         ...formData,
-        [name]: files[0]
+        [name]: selectedFile
       });
+      
+      // Create a preview for the image
+      if (selectedFile) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreview(reader.result);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        setPreview(null);
+      }
     } else if (type === "checkbox") {
       setFormData({
         ...formData,
@@ -56,12 +69,15 @@ const AddSignForm = ({ onSignAdded }) => {
         }
       });
 
+      console.log("Sign added successfully:", response.data);
+
       // Reset form
       setFormData({
         translation: "",
         iscommon: false,
         image: null
       });
+      setPreview(null);
 
       // Show success message
       setSuccess(true);
@@ -77,7 +93,13 @@ const AddSignForm = ({ onSignAdded }) => {
         setSuccess(false);
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.msg || "Failed to add sign");
+      console.error("Error adding sign:", err);
+      setError(
+        err.response?.data?.message || 
+        err.response?.data?.error || 
+        err.response?.data?.msg || 
+        "Failed to add sign"
+      );
     } finally {
       setLoading(false);
     }
@@ -87,6 +109,12 @@ const AddSignForm = ({ onSignAdded }) => {
     setIsModalOpen(false);
     setError(null);
     setSuccess(false);
+    setPreview(null);
+    setFormData({
+      translation: "",
+      iscommon: false,
+      image: null
+    });
   };
 
   return (
@@ -140,6 +168,11 @@ const AddSignForm = ({ onSignAdded }) => {
                   onChange={handleChange}
                   required
                 />
+                {preview && (
+                  <div className="image-preview">
+                    <img src={preview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px', marginTop: '10px' }} />
+                  </div>
+                )}
               </div>
 
               {error && <div className="error-message">{error}</div>}

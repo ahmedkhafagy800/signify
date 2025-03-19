@@ -33,13 +33,15 @@ const SignLanguageTable = ({ isDarkMode }) => {
   const refreshSigns = async () => {
     try {
       setLoading(true);
+      let fetchedSigns;
+      
       if (searchTerm.trim()) {
-        const allSigns = await fetchAllSigns();
-        setSigns(allSigns);
+        fetchedSigns = await fetchAllSigns();
       } else {
-        const commonSigns = await fetchCommonSigns();
-        setSigns(commonSigns);
+        fetchedSigns = await fetchCommonSigns();
       }
+      
+      setSigns(fetchedSigns);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -112,21 +114,31 @@ const SignLanguageTable = ({ isDarkMode }) => {
           </tr>
         </thead>
         <tbody>
-          {filteredSigns.map((sign) => (
-            <tr
-              key={sign._id}
-              className={`${isDarkMode ? "dark-mode-row" : ""}`}
-            >
-              <td>
-                <img
-                  src={`/uploads/${sign.image}`}
-                  width="200"
-                  alt={sign.translation}
-                />
-              </td>
-              <td>{sign.translation}</td>
+          {filteredSigns.length > 0 ? (
+            filteredSigns.map((sign) => (
+              <tr
+                key={sign._id}
+                className={`${isDarkMode ? "dark-mode-row" : ""}`}
+              >
+                <td>
+                  <img
+                    src={sign.image} // Use the URL directly from Cloudinary
+                    width="200"
+                    alt={sign.translation}
+                    onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src = 'placeholder-image.png'; // Set a fallback image
+                    }}
+                  />
+                </td>
+                <td>{sign.translation}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="2" style={{ textAlign: 'center' }}>No signs found</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

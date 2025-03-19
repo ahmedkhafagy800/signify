@@ -36,13 +36,19 @@ def draw_styled_landmarks(image, results):
                               mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
 
 
+# def extract_keypoints(results):
+#     """Extract keypoints from pose, face, and hand landmarks into a flattened array."""
+#     pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33*4)
+#     face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(468*3)
+#     lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten() if results.left_hand_landmarks else np.zeros(21*3)
+#     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
+#     return np.concatenate([pose, face, lh, rh])
 def extract_keypoints(results):
-    """Extract keypoints from pose, face, and hand landmarks into a flattened array."""
+    """Extract keypoints from pose and both hands only (excluding face)."""
     pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33*4)
-    face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(468*3)
     lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten() if results.left_hand_landmarks else np.zeros(21*3)
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
-    return np.concatenate([pose, face, lh, rh])
+    return np.concatenate([pose, lh, rh])
 
 
 def prob_viz(res, actions, input_frame, colors):

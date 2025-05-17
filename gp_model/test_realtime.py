@@ -15,8 +15,8 @@ except ImportError as e:
 
 from utils import mediapipe_detection, draw_styled_landmarks, extract_keypoints
 
-# 🟢 Load classes dynamically like in training
-DATA_PATH = os.path.join('Process   ed_Data')
+# 🟢 Load classes dynamically like in
+DATA_PATH = os.path.join('Processed_Data')
 actions = np.array(sorted([d for d in os.listdir(DATA_PATH) if os.path.isdir(os.path.join(DATA_PATH, d))]))
 colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245), (255, 0, 0), (0, 255, 255)]
 threshold = 0.8
@@ -64,7 +64,7 @@ def test_realtime():
             draw_styled_landmarks(image, results)
             keypoints = extract_keypoints(results)
             sequence.append(keypoints)
-            sequence = sequence[-30:]  # اخر 30 فريم فقط
+            sequence = sequence[-30:]
 
             if len(sequence) == 30:
                 seq_array = np.array(sequence)
@@ -75,17 +75,17 @@ def test_realtime():
                 predicted_action = actions[np.argmax(res)]
                 confidence = res[np.argmax(res)]
 
-                # 🔵 Logging live في الكونسول
                 print(f"🔍 Prediction: {predicted_action} | Confidence: {confidence:.2f}")
                 print(f"🧠 Full Probabilities: {dict(zip(actions, [round(float(p), 2) for p in res]))}")
 
                 if confidence > threshold:
                     current_action = predicted_action
-                image = prob_viz(res, actions, image, colors)
+                # image = prob_viz(res, actions, image, colors)
 
             image = cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
             image = put_arabic_text(image, current_action, (10, 5), font_size=32, color=(255, 255, 255))
-
+            cv2.namedWindow('Real-Time Action Recognition', cv2.WINDOW_NORMAL)
+            cv2.resizeWindow('Real-Time Action Recognition', 1280, 720)
             cv2.imshow('Real-Time Action Recognition', image)
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break

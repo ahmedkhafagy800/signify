@@ -8,7 +8,8 @@ import Navbar from './components/Navbar';
 import TranslatedTextDisplay from './components/TranslatedTextDisplay';
 import Contact from "./components/Contact";
 import './App.css';
-import load from "./assets/loader5.jpg";
+import load from "./assets/loader5.jpg";  
+import TranslatedVideos from './components/TranslatedVideos';
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const storedTheme = localStorage.getItem('darkMode');
@@ -46,11 +47,12 @@ function App() {
           <Navbar isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode} />
           <div className="content">
             <Routes>
+              <Route path="translatedvideos" element={<TranslatedVideos  isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
               <Route path="/upload" element={<VideoUpload isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode} />} />
               <Route path="/contact" element={<Contact isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
               <Route path="/live" element={<LiveCamera isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
               <Route path="/dictionary" element={<SignLanguageTable isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
-              <Route path="/" element={<LiveCamera isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
+              <Route path="/" element={<TranslatedVideos isDarkMode={isDarkMode} onToggleDarkMode={handleToggleDarkMode}/>} />
             </Routes>
           </div>
           <Footer />

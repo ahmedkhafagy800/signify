@@ -74,11 +74,9 @@ h2 {
         height: 40px;
         font-size: 18px;
     }
+        .live-camera-container {
+            flex-direction: column;
+            max-width: 90%;
+        }
 }
 
-@media (max-width: 1900px) {
-    .live-camera-container {
-        flex-direction: column;
-        max-width: 90%;
-    }
-}

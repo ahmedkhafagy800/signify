@@ -80,15 +80,12 @@ useEffect(() => {
         </div>
       )}
       
-      <button className={`btn-17 ${isDarkMode ? 'dark-mode-button' : ''}`} onClick={popTranslatedText} disabled={translatedText.length === 0}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -4 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-delete"><path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" />
-          <path d="m12 9 6 6" /><path d="m18 9-6 6" /></svg> حذف اخر كلمه
-      </button>
+
       
       <button className={`btn-17 ${isDarkMode ? 'dark-mode-button' : ''}`} onClick={resetTranslatedText} disabled={translatedText.length === 0}>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -2 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18" />
           <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-          <line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg> مسح الجميع
+          <line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg> حذف الترجمة
       </button>
 
       <div className='language-selector'>

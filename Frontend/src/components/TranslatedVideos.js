@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import AddVideoForm from './AddVideoForm';
 import './TranslatedVideos.css';
 
 const TranslatedVideos = ({ isDarkMode, onToggleDarkMode }) => {
@@ -7,24 +8,36 @@ const TranslatedVideos = ({ isDarkMode, onToggleDarkMode }) => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingVideo, setEditingVideo] = useState(null);
   
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('حطلي الايند بوينت هنا يا قلبي ');
-        setVideos(response.data);
-        setError(null);
-      } catch (err) {
-        setError('حدث خطأ أثناء تحميل الفيديوهات');
-        console.error('Error fetching videos:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchVideos = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:5000/api/videos');
+      setVideos(response.data.data || response.data);
+      setError(null);
+    } catch (err) {
+      setError('حدث خطأ أثناء تحميل الفيديوهات');
+      console.error('Error fetching videos:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchVideos();
   }, []);
+
+  const handleSuccess = (videoData) => {
+    if (editingVideo) {
+      // Handle update
+      setVideos(prev => prev.map(v => v._id === videoData._id ? videoData : v));
+    } else {
+      // Handle add
+      setVideos(prev => [videoData, ...prev]);
+    }
+  };
 
   const places = ['all', ...new Set(videos.map(video => video.place))];
   
@@ -64,23 +77,33 @@ const TranslatedVideos = ({ isDarkMode, onToggleDarkMode }) => {
       <div className="videos-header">
         <h1 className="videos-title">فيديوهات مترجمة بلغة الإشارة</h1>
         
-        <div className="place-selector">
-          <select
-            value={selectedPlace}
-            onChange={(e) => setSelectedPlace(e.target.value)}
-            className="place-select"
+        <div className="header-actions">
+          <div className="place-selector">
+            <select
+              value={selectedPlace}
+              onChange={(e) => setSelectedPlace(e.target.value)}
+              className="place-select"
+            >
+              <option value="all">جميع الأماكن</option>
+              {places.filter(place => place !== 'all').map((place) => (
+                <option key={place} value={place}>{place}</option>
+              ))}
+            </select>
+          </div>
+          
+          <button 
+            className="add-video-button"
+            onClick={() => setShowAddForm(true)}
           >
-            <option value="all">جميع الأماكن</option>
-            {places.filter(place => place !== 'all').map((place) => (
-              <option key={place} value={place}>{place}</option>
-            ))}
-          </select>
+            <span className="button-icon">+</span>
+            إضافة فيديو جديد
+          </button>
         </div>
       </div>
 
       <div className="videos-grid">
         {filteredVideos.map((video) => (
-          <div key={video.id} className="video-card">
+          <div key={video._id || video.id} className="video-card">
             <div className="video-wrapper">
               <video
                 src={video.videoUrl}
@@ -91,10 +114,28 @@ const TranslatedVideos = ({ isDarkMode, onToggleDarkMode }) => {
             <div className="video-content">
               <h3 className="video-title">{video.title}</h3>
               <p className="video-place">المكان: {video.place}</p>
+              {/* <button 
+                className="edit-video-button"
+                onClick={() => setEditingVideo(video)}
+              >
+                تعديل
+              </button> */}
             </div>
           </div>
         ))}
       </div>
+
+      {(showAddForm || editingVideo) && (
+        <AddVideoForm
+          isDarkMode={isDarkMode}
+          onClose={() => {
+            setShowAddForm(false);
+            setEditingVideo(null);
+          }}
+          onSuccess={handleSuccess}
+          videoToEdit={editingVideo}
+        />
+      )}
     </div>
   );
 };

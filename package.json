@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "cloudinary": "^1.41.3",
+    "dompurify": "^3.2.6",
     "multer-storage-cloudinary": "^4.0.0"
   }
 }

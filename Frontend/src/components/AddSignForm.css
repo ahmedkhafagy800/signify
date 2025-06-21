@@ -5,6 +5,7 @@
   }
   
   .add-sign-button {
+    display: none;
     background-color: #383838;
     color: white;
     border: none;

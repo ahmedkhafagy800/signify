@@ -3,12 +3,21 @@ import React, { useEffect, useState } from "react";
 import "./SignLanguageTable.css";
 import axios from "axios";
 import AddSignForm from "./AddSignForm";
+import DOMPurify from 'dompurify';
 
 const SignLanguageTable = ({ isDarkMode }) => {
   const [signs, setSigns] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Function to handle search input change with sanitization
+  const handleSearchChange = (e) => {
+    // Sanitize the user input to prevent XSS attacks.
+    // This will strip any HTML tags from the input.
+    const sanitizedInput = DOMPurify.sanitize(e.target.value, { USE_PROFILES: { html: false } });
+    setSearchTerm(sanitizedInput);
+  };
 
   // Function to fetch all signs
   const fetchAllSigns = async () => {
@@ -87,7 +96,7 @@ const SignLanguageTable = ({ isDarkMode }) => {
             className="search-input"
             placeholder="Search..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
           <div className="search-icon">
             <svg

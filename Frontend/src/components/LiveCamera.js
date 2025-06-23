@@ -10,6 +10,7 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
     const streamRef = useRef(null);
     const intervalId = useRef(null);    
     const [facingMode, setFacingMode] = useState('user'); 
+    const sessionIdRef = useRef(null); // Persist session ID between requests
     // const [currentAction, setCurrentAction] = useState(""); // Store current action
 
     useEffect(() => {
@@ -68,13 +69,23 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
                 const formData = new FormData();
                 formData.append('file', blob, 'frame.jpg'); 
                 try {
+                    const headers = {};
+                    if (sessionIdRef.current) {
+                        headers['X-Session-Id'] = sessionIdRef.current;
+                    }
                     const response = await fetch('http://127.0.0.1:8000/predict', {
                         method: 'POST',
                         body: formData,
+                        headers,
                     });
                     const data = await response.json();
-                    appendTranslatedText(data.sign);
-                    // setCurrentAction(data.sign); // Update current action
+                    console.log("API response:", data);
+                    if (data && data.session_id) {
+                        sessionIdRef.current = data.session_id;
+                    }
+                    if (data && data.sign && data.sign !== "...") {
+                        appendTranslatedText(data.sign);
+                    }
                 } catch (error) {
                     console.error('Error sending frame:', error);
                 }

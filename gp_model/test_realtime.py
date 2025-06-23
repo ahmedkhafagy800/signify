@@ -1,214 +1,137 @@
-import os
+# version 2
 import cv2
+import torch
 import numpy as np
 import mediapipe as mp
+from collections import deque
+from PIL import ImageFont, ImageDraw, Image
 import arabic_reshaper
 from bidi.algorithm import get_display
-from PIL import ImageFont, ImageDraw, Image
+import sys
+import os
 
-try:
-    import tensorflow as tf
-    from tensorflow.keras.models import load_model
-except ImportError as e:
-    print(f"Error importing TensorFlow modules: {e}")
-    exit(1)
+sys.stdout.reconfigure(encoding='utf-8')
 
-from utils import mediapipe_detection, draw_styled_landmarks, extract_keypoints
+# تحميل النموذج
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# 🟢 Load classes dynamically like in
-DATA_PATH = os.path.join('Processed_Data')
-actions = np.array(sorted([d for d in os.listdir(DATA_PATH) if os.path.isdir(os.path.join(DATA_PATH, d))]))
-colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245), (255, 0, 0), (0, 255, 255)]
-threshold = 0.8
+class CNN1DSignLangModel(torch.nn.Module):
+    def __init__(self, input_dim=1629, num_classes=8, dropout=0.3):
+        super().__init__()
+        self.conv = torch.nn.Sequential(
+            torch.nn.Conv1d(input_dim, 256, kernel_size=3, padding=1),
+            torch.nn.ReLU(),
+            torch.nn.BatchNorm1d(256),
+            torch.nn.Dropout(dropout),
+            torch.nn.Conv1d(256, 128, kernel_size=3, padding=1),
+            torch.nn.ReLU(),
+            torch.nn.AdaptiveAvgPool1d(1),
+        )
+        self.fc = torch.nn.Sequential(
+            torch.nn.Flatten(),
+            torch.nn.Linear(128, 64),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(dropout),
+            torch.nn.Linear(64, num_classes)
+        )
 
-def put_arabic_text(img, text, position, font_size=32, color=(255, 255, 255)):
+    def forward(self, x):
+        x = x.permute(0, 2, 1)
+        x = self.conv(x)
+        return self.fc(x)
+
+label2idx = {'الاثنين': 0, 'الاحد': 1, 'الاربعاء': 2, 'الثلاثاء': 3, 'الجمعه': 4, 'الخميس': 5, 'السبت': 6,
+             'السلام عليكم': 7, 'انا': 8, 'شهاده ميلاد': 9, 'عاوز': 10, 'قيد': 11, 'يوم': 12}
+idx2label = {v: k for k, v in label2idx.items()}
+num_classes = len(label2idx)
+
+model = CNN1DSignLangModel(input_dim=1629, num_classes=num_classes)
+model.load_state_dict(torch.load("best_model77%.pt", map_location=device))
+model.to(device)
+model.eval()
+
+mp_holistic = mp.solutions.holistic
+holistic = mp_holistic.Holistic(static_image_mode=False, min_detection_confidence=0.4, min_tracking_confidence=0.4)
+
+# Preload font once
+FONT_PATH = "Amiri-Regular.ttf"
+FONT_SIZE = 32
+if os.path.exists(FONT_PATH):
+    try:
+        ARABIC_FONT = ImageFont.truetype(FONT_PATH, FONT_SIZE)
+    except OSError:
+        print(f"[ERROR] Could not load font at '{FONT_PATH}'. Using default font. Arabic may not display correctly.")
+        ARABIC_FONT = ImageFont.load_default()
+else:
+    print(f"[ERROR] Font file '{FONT_PATH}' not found. Using default font. Arabic may not display correctly.")
+    ARABIC_FONT = ImageFont.load_default()
+
+def extract_keypoints_from_frame(frame):
+    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    results = holistic.process(image)
+
+    face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]) if results.face_landmarks else np.zeros((468, 3))
+    pose = np.array([[res.x, res.y, res.z] for res in results.pose_landmarks.landmark]) if results.pose_landmarks else np.zeros((33, 3))
+    left = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]) if results.left_hand_landmarks else np.zeros((21, 3))
+    right = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]) if results.right_hand_landmarks else np.zeros((21, 3))
+
+    return np.concatenate([face, pose, left, right]).flatten()
+
+def draw_arabic_text(frame, text, position=(10, 40)):
     reshaped_text = arabic_reshaper.reshape(text)
     bidi_text = get_display(reshaped_text)
-    img_pil = Image.fromarray(img)
+    img_pil = Image.fromarray(frame)
     draw = ImageDraw.Draw(img_pil)
-    font = ImageFont.truetype("arial.ttf", font_size)
-    draw.text(position, bidi_text, font=font, fill=color)
+    draw.text(position, bidi_text, font=ARABIC_FONT, fill=(0, 255, 0))
     return np.array(img_pil)
 
-def prob_viz(res, actions, input_frame, colors):
-    output_frame = input_frame.copy()
-    img_pil = Image.fromarray(output_frame)
-    draw = ImageDraw.Draw(img_pil)
-    font = ImageFont.truetype("arial.ttf", 24)
+if __name__ == "__main__":
+    sequence = deque(maxlen=60)
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)  # Faster on Windows
 
-    for num, prob in enumerate(res):
-        cv2.rectangle(output_frame, (0, 60 + num * 40), (int(prob * 640), 90 + num * 40), colors[num % len(colors)], -1)
-        reshaped_text = arabic_reshaper.reshape(actions[num])
-        bidi_text = get_display(reshaped_text)
-        draw.text((10, 60 + num * 40), f"{bidi_text} - {prob:.2f}", font=font, fill=(255, 255, 255))
+    frame_skip = 1  # Process every frame; set to 2 or 3 to process every 2nd/3rd frame for more speed
+    frame_count = 0
 
-    return np.array(img_pil)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-def test_realtime():
-    model = load_model('final_action_model.keras')
-    print("✅ Model loaded successfully.")
-    sequence = []
-    current_action = ""
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("❌ Error: Could not open webcam.")
-        return
+        frame = cv2.flip(frame, 1)
+        # Resize for faster processing (optional, e.g., 640x360)
+        frame_small = cv2.resize(frame, (640, 360))
 
-    with mp.solutions.holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
+        frame_count += 1
+        if frame_count % frame_skip != 0:
+            cv2.imshow('مترجم لغة الإشارة', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-            frame = cv2.flip(frame, 1)
-            image, results = mediapipe_detection(frame, holistic)
-            draw_styled_landmarks(image, results)
-            keypoints = extract_keypoints(results)
-            sequence.append(keypoints)
-            sequence = sequence[-30:]
+            continue
 
-            if len(sequence) == 30:
-                seq_array = np.array(sequence)
-                pad_width = model.input_shape[1] - seq_array.shape[0]
-                seq_array = np.pad(seq_array, ((0, pad_width), (0, 0)), mode='constant')
+        keypoints = extract_keypoints_from_frame(frame_small)
 
-                res = model.predict(np.expand_dims(seq_array, axis=0))[0]
-                predicted_action = actions[np.argmax(res)]
-                confidence = res[np.argmax(res)]
-
-                print(f"🔍 Prediction: {predicted_action} | Confidence: {confidence:.2f}")
-                print(f"🧠 Full Probabilities: {dict(zip(actions, [round(float(p), 2) for p in res]))}")
-
-                if confidence > threshold:
-                    current_action = predicted_action
-                # image = prob_viz(res, actions, image, colors)
-
-            image = cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
-            image = put_arabic_text(image, current_action, (10, 5), font_size=32, color=(255, 255, 255))
-            cv2.namedWindow('Real-Time Action Recognition', cv2.WINDOW_NORMAL)
-            cv2.resizeWindow('Real-Time Action Recognition', 1280, 720)
-            cv2.imshow('Real-Time Action Recognition', image)
-            if cv2.waitKey(10) & 0xFF == ord('q'):
+        if np.all(keypoints == 0):
+            cv2.imshow('مترجم لغة الإشارة', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+            continue
+
+        sequence.append(keypoints)
+
+        if len(sequence) == 60:
+            input_data = np.array(sequence)
+            input_tensor = torch.tensor(input_data, dtype=torch.float32).unsqueeze(0).to(device)
+            with torch.no_grad():
+                output = model(input_tensor)
+                pred_class = torch.argmax(output, dim=1).item()
+                pred_label = idx2label[pred_class]
+
+            print("الإشارة:", pred_label)
+            frame = draw_arabic_text(frame, f"الإشارة: {pred_label}", position=(10, 30))
+
+        cv2.imshow('مترجم لغة الإشارة', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     cap.release()
     cv2.destroyAllWindows()
-
-if __name__ == "__main__":
-    test_realtime()
-# import os
-# import cv2
-# import numpy as np
-# import mediapipe as mp
-# import arabic_reshaper
-# from bidi.algorithm import get_display
-# from PIL import ImageFont, ImageDraw, Image
-#
-# try:
-#     import tensorflow as tf
-#     from tensorflow.keras.models import load_model
-# except ImportError as e:
-#     print(f"Error importing TensorFlow modules: {e}")
-#     exit(1)
-#
-# from utils import mediapipe_detection, draw_styled_landmarks, extract_keypoints
-#
-# # 🟢 إعدادات عامة
-# DATA_PATH = os.path.join('Processed_Data')
-# actions = np.array(sorted([d for d in os.listdir(DATA_PATH) if os.path.isdir(os.path.join(DATA_PATH, d))]))
-# colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245), (255, 0, 0), (0, 255, 255)]
-# threshold = 0.4  # خفضته لتسهيل التقاط التوقعات
-#
-# # 🟢 إعداد خط الكتابة بالعربي
-# def put_arabic_text(img, text, position, font_size=32, color=(255, 255, 255)):
-#     reshaped_text = arabic_reshaper.reshape(text)
-#     bidi_text = get_display(reshaped_text)
-#     img_pil = Image.fromarray(img)
-#     draw = ImageDraw.Draw(img_pil)
-#     font = ImageFont.truetype("arial.ttf", font_size)
-#     draw.text(position, bidi_text, font=font, fill=color)
-#     return np.array(img_pil)
-#
-# # 🟢 فيجوالايزر للبروب
-# def prob_viz(res, actions, input_frame, colors):
-#     output_frame = input_frame.copy()
-#     img_pil = Image.fromarray(output_frame)
-#     draw = ImageDraw.Draw(img_pil)
-#     font = ImageFont.truetype("arial.ttf", 24)
-#
-#     for num, prob in enumerate(res):
-#         cv2.rectangle(output_frame, (0, 60 + num * 40), (int(prob * 640), 90 + num * 40), colors[num % len(colors)], -1)
-#         reshaped_text = arabic_reshaper.reshape(actions[num])
-#         bidi_text = get_display(reshaped_text)
-#         draw.text((10, 60 + num * 40), f"{bidi_text} - {prob:.2f}", font=font, fill=(255, 255, 255))
-#
-#     return np.array(img_pil)
-#
-# # 🟢 تنفيذ التيست علي فولدر
-# # 🟢 تنفيذ التيست علي فولدر
-# def test_on_folder(folder_path, ground_truth_label):
-#     model = load_model('final_action_model.keras')
-#     print("✅ Model loaded successfully.")
-#     total_sequences = 0
-#     correct_predictions = 0
-#     sequence = []
-#     current_action = ""
-#
-#     with mp.solutions.holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-#         images = sorted(os.listdir(folder_path))
-#         print(f"🖼️ Found {len(images)} images in folder '{folder_path}'")
-#         for img_name in images:
-#             img_path = os.path.join(folder_path, img_name)
-#             frame = cv2.imread(img_path)
-#             if frame is None:
-#                 print(f"⚠️ Skipping {img_path}, couldn't load.")
-#                 continue
-#
-#             image, results = mediapipe_detection(frame, holistic)
-#             draw_styled_landmarks(image, results)
-#             keypoints = extract_keypoints(results)
-#             sequence.append(keypoints)
-#
-#         # ✅ هنا نعمل padding لو أقل من 30
-#         if len(sequence) < 30:
-#             padding_length = 30 - len(sequence)
-#             sequence += [np.zeros_like(sequence[0])] * padding_length
-#             print(f"⚠️ Sequence padded with {padding_length} empty frames to reach 30 frames.")
-#
-#         sequence = sequence[-30:]  # نخلي اخر 30 فريم بس (حتى لو عملنا padding)
-#
-#         seq_array = np.array(sequence)
-#         pad_width = model.input_shape[1] - seq_array.shape[0]  # تأكد لو الموديل عايز أكتر من 30 (احتياط)
-#         seq_array = np.pad(seq_array, ((0, pad_width), (0, 0)), mode='constant')
-#
-#         res = model.predict(np.expand_dims(seq_array, axis=0))[0]
-#         predicted_action = actions[np.argmax(res)]
-#         confidence = res[np.argmax(res)]
-#
-#         print(
-#             f"[DEBUG] Sequence length: {len(sequence)} | Confidence: {confidence:.2f} | Predicted: {predicted_action} | GT: {ground_truth_label}")
-#         print(f"[DEBUG] Full Probs: {dict(zip(actions, [round(float(p), 2) for p in res]))}")
-#
-#         total_sequences += 1
-#         if confidence > threshold:
-#             if predicted_action == ground_truth_label:
-#                 correct_predictions += 1
-#         else:
-#             print(f"⚠️ Low confidence ({confidence:.2f}), prediction might not be reliable.")
-#         # Visualization
-#         image = prob_viz(res, actions, image, colors)
-#         image = cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
-#         image = put_arabic_text(image, predicted_action, (10, 5), font_size=32, color=(255, 255, 255))
-#
-#         cv2.imshow('Test', image)
-#         cv2.waitKey(0)  # هيقفلك الصورة لما تدوس أي زرار
-#
-#     acc = (correct_predictions / total_sequences) * 100 if total_sequences > 0 else 0
-#     print(f"✅ Final Accuracy: {acc:.2f}% | Correct: {correct_predictions} / {total_sequences}")
-#     cv2.destroyAllWindows()
-#
-#
-# if __name__ == "__main__":
-#     test_folder = r"C:\Users\Yasso\Downloads\test_sing_mode-main\01\test\0042\02_01_0042_(17_11_16_17_34_03)_c"
-#     ground_truth_label = 'ز'  # عدلها حسب الكلاس اللي المفروض يكون صح
-#     test_on_folder(test_folder, ground_truth_label)
-#

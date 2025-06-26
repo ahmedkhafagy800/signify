@@ -5,7 +5,8 @@ import TranslatedTextDisplay from './TranslatedTextDisplay';
 
 const VideoUpload = ({ isDarkMode, onToggleDarkMode }) => {
   const [file, setFile] = useState(null);
-  const { appendTranslatedText } = useStore();
+  const { appendTranslatedText, resetTranslatedText } = useStore();
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -14,18 +15,24 @@ const VideoUpload = ({ isDarkMode, onToggleDarkMode }) => {
   const handleUpload = async () => {
     if (!file) return alert('يرجى اختيار فيديو أولاً');
 
+    resetTranslatedText();
+    setLoading(true);
     const formData = new FormData();
     formData.append('video', file);
 
     try {
-      const response = await fetch('/api/translate', {
+      const response = await fetch('http://127.0.0.1:8000/predict-video', {
         method: 'POST',
         body: formData,
       });
       const data = await response.json();
-      appendTranslatedText(data.translatedText);
+      if (data.translatedText) {
+        appendTranslatedText(data.translatedText);
+      }
     } catch (error) {
       console.error('Error uploading video:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,14 +71,18 @@ const VideoUpload = ({ isDarkMode, onToggleDarkMode }) => {
     </div>
   )}
 
-  <button className={`btn-17 ${isDarkMode ?'dark-mode-button' : ''}`} onClick={handleUpload}>
+  <button className={`btn-17 ${isDarkMode ?'dark-mode-button' : ''}`} onClick={handleUpload} disabled={loading}>
     <span className="text-container">
-            <span className={`text`}>🎬 رفع وترجمة</span>
+      <span className={`text`}>{loading ? '... جارٍ الترجمة' : '🎬 رفع وترجمة'}</span>
     </span>
   </button>
 </div>
 
       <TranslatedTextDisplay isDarkMode={isDarkMode} onToggle={onToggleDarkMode}/>
+
+      {loading && (
+        <div className="loading-indicator">جاري معالجة الفيديو ...</div>
+      )}
 
     </div>
   );

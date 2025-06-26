@@ -1,4 +1,3 @@
-
 import cv2
 import numpy as np
 import torch
@@ -77,58 +76,46 @@ model = CTNet(input_dim=1629, hidden_dim=256, num_classes=len(label_map)).to(dev
 model.load_state_dict(torch.load("best_ctnet_model86%over.pth", map_location=device))
 model.eval()
 
-# ----------- Webcam Loop -----------
-cap = cv2.VideoCapture(0)
-mp_holistic = mp.solutions.holistic
-sequence = []
-confidence_threshold = 0.85
-
-# ⏸ لحفظ آخر توقع وعرضه لعدد معين من الفريمات
-last_probs = None
-display_counter = 0
-DISPLAY_FRAMES = 30
-
-with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        frame = cv2.flip(frame, 1)
-
-        keypoints, hand_present = extract_keypoints_from_frame(frame, holistic)
-
-        if hand_present:
-            sequence.append(keypoints)
-
-            if len(sequence) == 30:
-                seq_np = np.array(sequence)
-                seq_np = pad_or_truncate(seq_np, 30)
-                input_tensor = torch.tensor(seq_np, dtype=torch.float32).unsqueeze(0).to(device)
-
-                with torch.no_grad():
-                    preds = model(input_tensor)
-                    probs = torch.softmax(preds, dim=1).cpu().numpy()[0]
-
-                last_probs = probs
-                display_counter = DISPLAY_FRAMES
-                sequence = []
-        else:
-            sequence.clear()
-
-        # 🎯 عرض التوقع الأخير
-        if last_probs is not None and display_counter > 0:
-            y0 = 30
-            for i, prob in enumerate(last_probs):
-                label = label_map[i]
-                conf_percent = f"{prob * 100:.1f}%"
-                display_text = f"{label} ({conf_percent})"
-                frame = draw_arabic_text(frame, display_text, (20, y0), font_path='arial.ttf', font_size=28)
-                y0 += 40
-            display_counter -= 1
-
-        cv2.imshow('🎥 Live Prediction (CTNet)', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-cap.release()
-cv2.destroyAllWindows()
+if __name__ == "__main__":
+    mp_holistic = mp.solutions.holistic
+    cap = cv2.VideoCapture(0)
+    sequence = []
+    confidence_threshold = 0.85
+    last_probs = None
+    display_counter = 0
+    DISPLAY_FRAMES = 30
+    with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame = cv2.flip(frame, 1)
+            keypoints, hand_present = extract_keypoints_from_frame(frame, holistic)
+            if hand_present:
+                sequence.append(keypoints)
+                if len(sequence) == 30:
+                    seq_np = np.array(sequence)
+                    seq_np = pad_or_truncate(seq_np, 30)
+                    input_tensor = torch.tensor(seq_np, dtype=torch.float32).unsqueeze(0).to(device)
+                    with torch.no_grad():
+                        preds = model(input_tensor)
+                        probs = torch.softmax(preds, dim=1).cpu().numpy()[0]
+                    last_probs = probs
+                    display_counter = DISPLAY_FRAMES
+                    sequence = []
+            else:
+                sequence.clear()
+            if last_probs is not None and display_counter > 0:
+                y0 = 30
+                for i, prob in enumerate(last_probs):
+                    label = label_map[i]
+                    conf_percent = f"{prob * 100:.1f}%"
+                    display_text = f"{label} ({conf_percent})"
+                    frame = draw_arabic_text(frame, display_text, (20, y0), font_path='arial.ttf', font_size=28)
+                    y0 += 40
+                display_counter -= 1
+            cv2.imshow('🎥 Live Prediction (CTNet)', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+    cap.release()
+    cv2.destroyAllWindows()

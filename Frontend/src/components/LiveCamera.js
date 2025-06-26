@@ -73,7 +73,7 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
                     if (sessionIdRef.current) {
                         headers['X-Session-Id'] = sessionIdRef.current;
                     }
-                    const response = await fetch('http://127.0.0.1:8000/predict', {
+                    const response = await fetch('http://127.0.0.1:8000/predict-demo', {
                         method: 'POST',
                         body: formData,
                         headers,
@@ -107,5 +107,6 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
         </div>
     );
 };
+
 
 export default LiveCamera;

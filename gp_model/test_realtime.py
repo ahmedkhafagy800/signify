@@ -74,7 +74,7 @@ label_map = [
 # ----------- Load Model -----------
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CTNet(input_dim=1629, hidden_dim=256, num_classes=len(label_map)).to(device)
-model.load_state_dict(torch.load("./gp_model/best_ctnet_model86%over.pth", map_location=device))
+model.load_state_dict(torch.load("best_ctnet_model86%over.pth", map_location=device))
 model.eval()
 
 # ----------- Webcam Loop -----------

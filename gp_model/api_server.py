@@ -24,7 +24,7 @@ app.add_middleware(
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CNN1DSignLangModel(input_dim=1629, num_classes=len(idx2label))
-model.load_state_dict(torch.load("best_model77%.pt", map_location=device))
+model.load_state_dict(torch.load("best_ctnet_model86%over.pth", map_location=device))
 model.to(device)
 model.eval()
 

@@ -85,8 +85,8 @@ async def predict(request: Request, file: UploadFile = File(...)):
         # Return the current word (or the full sentence if done)
         if state["word_idx"] < len(TARGET_SENTENCE):
             return {"sign": TARGET_SENTENCE[state["word_idx"]], "session_id": session_id}
-        else:
-            return {"sign": "تمت الجملة: " + " ".join(TARGET_SENTENCE), "session_id": session_id}
+        # else:
+        #     return {"sign": "تمت الجملة: " + " ".join(TARGET_SENTENCE), "session_id": session_id}
         # TEST LOGIC END
 
         # --- Original logic (comment out for test) ---

@@ -5,7 +5,7 @@ import TranslatedTextDisplay from './TranslatedTextDisplay';
 
 const VideoUpload = ({ isDarkMode, onToggleDarkMode }) => {
   const [file, setFile] = useState(null);
-  const { appendTranslatedText } = useStore();
+  const { appendTranslatedText, resetTranslatedText } = useStore();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -15,17 +15,24 @@ const VideoUpload = ({ isDarkMode, onToggleDarkMode }) => {
     if (!file) return alert('يرجى اختيار فيديو أولاً');
 
     const formData = new FormData();
-    formData.append('video', file);
+    formData.append('file', file);
 
     try {
-      const response = await fetch('/api/translate', {
+      const response = await fetch('http://localhost:8000/predict_video', {
         method: 'POST',
         body: formData,
       });
       const data = await response.json();
-      appendTranslatedText(data.translatedText);
+      console.log('Backend response:', data);
+      if (data.translation) {
+        resetTranslatedText();
+        appendTranslatedText(data.translation);
+      } else {
+        alert('لم يتم التعرف على أي إشارات في الفيديو.');
+      }
     } catch (error) {
       console.error('Error uploading video:', error);
+      alert('حدث خطأ أثناء رفع الفيديو أو الترجمة.');
     }
   };
 

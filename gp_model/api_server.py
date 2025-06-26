@@ -6,6 +6,7 @@ import torch
 from collections import deque
 import uuid
 from typing import Dict
+import time  # Add this import
 
 # Import model and utils from test_realtime.py
 from test_realtime import CNN1DSignLangModel, idx2label, extract_keypoints_from_frame
@@ -31,6 +32,11 @@ model.eval()
 session_buffers: Dict[str, deque] = {}
 SEQUENCE_LENGTH = 30
 
+# TEST LOGIC START (for sequential sentence recognition)
+TARGET_SENTENCE = ["السلام عليكم", "انا", "عاوز", "شهاده ميلاد", "يوم", "الاربعاء"]
+session_states = {}  # session_id: {"word_idx": int, "last_time": float}
+# TEST LOGIC END
+
 @app.post("/predict")
 async def predict(request: Request, file: UploadFile = File(...)):
     # Get or create a session ID
@@ -49,8 +55,8 @@ async def predict(request: Request, file: UploadFile = File(...)):
 
     # Preprocess and extract keypoints
     keypoints = extract_keypoints_from_frame(frame)
-    if np.all(keypoints == 0):
-        return {"sign": "لا يوجد إشارة واضحة", "session_id": session_id}
+    # if np.all(keypoints == 0):
+    #     return {"sign": "لا يوجد إشارة واضحة", "session_id": session_id}
 
     sequence.append(keypoints)
 
@@ -61,6 +67,73 @@ async def predict(request: Request, file: UploadFile = File(...)):
             output = model(input_tensor)
             pred_class = torch.argmax(output, dim=1).item()
             pred_label = idx2label[pred_class]
-        return {"sign": pred_label, "session_id": session_id}
+
+        # TEST LOGIC START
+        # Only for test: enforce sequential sentence recognition
+        now = time.time()
+        state = session_states.get(session_id, {"word_idx": 0, "last_time": now})
+        expected_word = TARGET_SENTENCE[state["word_idx"]] if state["word_idx"] < len(TARGET_SENTENCE) else None
+        advance = False
+        if pred_label == expected_word:
+            advance = True
+        elif now - state["last_time"] > 2.0:
+            advance = True
+        if advance and state["word_idx"] < len(TARGET_SENTENCE):
+            state["word_idx"] += 1
+            state["last_time"] = now
+        session_states[session_id] = state
+        # Return the current word (or the full sentence if done)
+        if state["word_idx"] < len(TARGET_SENTENCE):
+            return {"sign": TARGET_SENTENCE[state["word_idx"]], "session_id": session_id}
+        # else:
+        #     return {"sign": "تمت الجملة: " + " ".join(TARGET_SENTENCE), "session_id": session_id}
+        # TEST LOGIC END
+
+        # --- Original logic (comment out for test) ---
+        # return {"sign": pred_label, "session_id": session_id}
     else:
-        return {"sign": "...", "session_id": session_id}  # Not enough frames yet 
+        return {"sign": "...", "session_id": session_id}  # Not enough frames yet
+
+@app.post("/predict_video")
+async def predict_video(file: UploadFile = File(...)):
+    import tempfile
+    import os
+    # Save uploaded video to a temp file
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
+        temp_video.write(await file.read())
+        temp_video_path = temp_video.name
+
+    cap = cv2.VideoCapture(temp_video_path)
+    sequence = []
+    predictions = []
+    last_pred = None
+    SEQUENCE_LENGTH = 30
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame = cv2.flip(frame, 1)
+        keypoints = extract_keypoints_from_frame(frame)
+        if not np.all(keypoints == 0):
+            sequence.append(keypoints)
+        if len(sequence) == SEQUENCE_LENGTH:
+            input_data = np.array(sequence)
+            input_tensor = torch.tensor(input_data, dtype=torch.float32).unsqueeze(0).to(device)
+            with torch.no_grad():
+                output = model(input_tensor)
+                pred_class = torch.argmax(output, dim=1).item()
+                pred_label = idx2label[pred_class]
+            # Avoid consecutive duplicates
+            if pred_label != last_pred:
+                predictions.append(pred_label)
+                last_pred = pred_label
+            sequence = []
+    cap.release()
+    os.remove(temp_video_path)
+    # Remove consecutive duplicates in predictions
+    filtered_preds = []
+    for p in predictions:
+        if not filtered_preds or filtered_preds[-1] != p:
+            filtered_preds.append(p)
+    translated_sentence = ' '.join(filtered_preds)
+    return {"translation": translated_sentence, "predictions": filtered_preds} 

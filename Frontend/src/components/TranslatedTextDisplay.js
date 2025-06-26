@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import useStore from '../store';
 import './TranslatedTextDisplay.css';
 
-const TranslatedTextDisplay = ({ isDarkMode, onToggleDarkMode }) => {
+const TranslatedTextDisplay = ({ isDarkMode, onToggleDarkMode, sessionId }) => {
   const location = useLocation();
   const { translatedText, resetTranslatedText, popTranslatedText } = useStore();
   const combinedText = translatedText.join(' ');
@@ -65,6 +65,18 @@ useEffect(() => {
     window.speechSynthesis.speak(utterance);
   };
 
+  const handleReset = async () => {
+    console.log('حذف الترجمة button clicked: resetting sentence.');
+    resetTranslatedText();
+    try {
+      const headers = {};
+      if (sessionId) headers['X-Session-Id'] = sessionId;
+      await fetch('http://127.0.0.1:8000/reset_sentence', { method: 'POST', headers });
+    } catch (error) {
+      console.error('Error resetting sentence on backend:', error);
+    }
+  };
+
   return (
     <div className={`translated-container ${isDarkMode ? 'dark-mode' : ''}`}>
       <h3 className='label'>:النص المترجم</h3>
@@ -82,7 +94,7 @@ useEffect(() => {
       
 
       
-      <button className={`btn-17 ${isDarkMode ? 'dark-mode-button' : ''}`} onClick={resetTranslatedText} disabled={translatedText.length === 0}>
+      <button className={`btn-17 ${isDarkMode ? 'dark-mode-button' : ''}`} onClick={handleReset} disabled={translatedText.length === 0}>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -2 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18" />
           <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
           <line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg> حذف الترجمة

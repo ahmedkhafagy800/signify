@@ -14,7 +14,7 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
     // const [currentAction, setCurrentAction] = useState(""); // Store current action
 
     useEffect(() => {
-        appendTranslatedText("كيف حالك؟");          
+        // appendTranslatedText("كيف حالك؟");          
         // setCurrentAction("كيف حالك؟");  // Set initial action
         startCamera(facingMode);
         intervalId.current = setInterval(captureAndSendFrame, 200);
@@ -103,7 +103,7 @@ const LiveCamera = ({ isDarkMode, onToggleDarkMode }) => {
                 <video ref={videoRef} autoPlay className="video-stream" />
             </div>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-            <TranslatedTextDisplay isDarkMode={isDarkMode} onToggle={onToggleDarkMode}/>
+            <TranslatedTextDisplay isDarkMode={isDarkMode} onToggle={onToggleDarkMode} sessionId={sessionIdRef.current}/>
         </div>
     );
 };

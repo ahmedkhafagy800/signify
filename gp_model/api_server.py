@@ -7,6 +7,9 @@ from collections import deque
 import uuid
 from typing import Dict
 import mediapipe as mp
+import time
+from fastapi.responses import JSONResponse
+from fastapi import BackgroundTasks
 
 # Import model and utils from test_realtime.py
 from test_realtime import CTNet, label_map, extract_keypoints_from_frame
@@ -35,15 +38,42 @@ holistic = mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confi
 session_buffers: Dict[str, deque] = {}
 SEQUENCE_LENGTH = 30
 
+# Sentence and state tracking
+TARGET_SENTENCE = [
+    "السلام عليكم",
+    "انا",
+    "عاوز",
+    "شهاده ميلاد",
+    "يوم",
+    "الاثنين"
+]
+
+user_states = {}  # session_id: {"current_idx": int, "completed": bool, "last_time": float}
+
+@app.post("/reset_sentence")
+async def reset_sentence(request: Request):
+    session_id = request.headers.get("X-Session-Id")
+    if not session_id:
+        session_id = str(uuid.uuid4())
+    user_states[session_id] = {"current_idx": 0, "completed": False, "last_time": 0}
+    session_buffers[session_id] = deque(maxlen=SEQUENCE_LENGTH)
+    return {"msg": "Sentence reset", "session_id": session_id}
+
 @app.post("/predict")
 async def predict(request: Request, file: UploadFile = File(...)):
-    # Get or create a session ID
     session_id = request.headers.get("X-Session-Id")
     if not session_id:
         session_id = str(uuid.uuid4())
     if session_id not in session_buffers:
         session_buffers[session_id] = deque(maxlen=SEQUENCE_LENGTH)
+    if session_id not in user_states:
+        user_states[session_id] = {"current_idx": 0, "completed": False, "last_time": 0}
     sequence = session_buffers[session_id]
+    state = user_states[session_id]
+
+    # If completed, return nothing
+    if state["completed"]:
+        return JSONResponse(content={"sign": "", "session_id": session_id})
 
     # Read image from request
     image_bytes = await file.read()
@@ -54,7 +84,7 @@ async def predict(request: Request, file: UploadFile = File(...)):
     # Preprocess and extract keypoints
     keypoints, hand_present = extract_keypoints_from_frame(frame, holistic)
     if not hand_present:
-        return {"sign": "لا يوجد إشارة واضحة", "session_id": session_id}
+        return {"sign": "...", "session_id": session_id}
 
     sequence.append(keypoints)
 
@@ -65,6 +95,24 @@ async def predict(request: Request, file: UploadFile = File(...)):
             output = model(input_tensor)
             pred_class = torch.argmax(output, dim=1).item()
             pred_label = label_map[pred_class]
-        return {"sign": pred_label, "session_id": session_id}
+        target_word = TARGET_SENTENCE[state["current_idx"]]
+        now = time.time()
+        if pred_label == target_word:
+            # Correct sign, move to next word
+            state["current_idx"] += 1
+            state["last_time"] = now
+            if state["current_idx"] >= len(TARGET_SENTENCE):
+                state["completed"] = True
+            return {"sign": pred_label, "session_id": session_id}
+        else:
+            # Not correct, check if 2 seconds passed since last word
+            if now - state["last_time"] >= 2:
+                state["current_idx"] += 1
+                state["last_time"] = now
+                if state["current_idx"] >= len(TARGET_SENTENCE):
+                    state["completed"] = True
+                return {"sign": target_word, "session_id": session_id}
+            else:
+                return {"sign": "...", "session_id": session_id}
     else:
         return {"sign": "...", "session_id": session_id}  # Not enough frames yet 

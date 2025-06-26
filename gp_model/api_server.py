@@ -33,7 +33,7 @@ session_buffers: Dict[str, deque] = {}
 SEQUENCE_LENGTH = 30
 
 # TEST LOGIC START (for sequential sentence recognition)
-TARGET_SENTENCE = ["السلام عليكم", "انا", "عاوز", "شهاده ميلاد", "يوم", "الاربعاء"]
+TARGET_SENTENCE = ["السلام عليكم", "انا", "عايز", "شهاده ميلاد", "يوم", "الاثنين"]
 session_states = {}  # session_id: {"word_idx": int, "last_time": float}
 # TEST LOGIC END
 
@@ -136,4 +136,12 @@ async def predict_video(file: UploadFile = File(...)):
         if not filtered_preds or filtered_preds[-1] != p:
             filtered_preds.append(p)
     translated_sentence = ' '.join(filtered_preds)
-    return {"translation": translated_sentence, "predictions": filtered_preds} 
+    return {"translation": translated_sentence, "predictions": filtered_preds}
+
+@app.post("/reset_session")
+async def reset_session(request: Request):
+    session_id = request.headers.get("X-Session-Id")
+    if session_id and session_id in session_states:
+        session_states[session_id] = {"word_idx": 0, "last_time": time.time()}
+        return {"status": "reset", "session_id": session_id}
+    return {"status": "not_found", "session_id": session_id} 

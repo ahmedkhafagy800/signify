@@ -92,4 +92,48 @@ async def predict(request: Request, file: UploadFile = File(...)):
         # --- Original logic (comment out for test) ---
         # return {"sign": pred_label, "session_id": session_id}
     else:
-        return {"sign": "...", "session_id": session_id}  # Not enough frames yet 
+        return {"sign": "...", "session_id": session_id}  # Not enough frames yet
+
+@app.post("/predict_video")
+async def predict_video(file: UploadFile = File(...)):
+    import tempfile
+    import os
+    # Save uploaded video to a temp file
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
+        temp_video.write(await file.read())
+        temp_video_path = temp_video.name
+
+    cap = cv2.VideoCapture(temp_video_path)
+    sequence = []
+    predictions = []
+    last_pred = None
+    SEQUENCE_LENGTH = 30
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame = cv2.flip(frame, 1)
+        keypoints = extract_keypoints_from_frame(frame)
+        if not np.all(keypoints == 0):
+            sequence.append(keypoints)
+        if len(sequence) == SEQUENCE_LENGTH:
+            input_data = np.array(sequence)
+            input_tensor = torch.tensor(input_data, dtype=torch.float32).unsqueeze(0).to(device)
+            with torch.no_grad():
+                output = model(input_tensor)
+                pred_class = torch.argmax(output, dim=1).item()
+                pred_label = idx2label[pred_class]
+            # Avoid consecutive duplicates
+            if pred_label != last_pred:
+                predictions.append(pred_label)
+                last_pred = pred_label
+            sequence = []
+    cap.release()
+    os.remove(temp_video_path)
+    # Remove consecutive duplicates in predictions
+    filtered_preds = []
+    for p in predictions:
+        if not filtered_preds or filtered_preds[-1] != p:
+            filtered_preds.append(p)
+    translated_sentence = ' '.join(filtered_preds)
+    return {"translation": translated_sentence, "predictions": filtered_preds} 

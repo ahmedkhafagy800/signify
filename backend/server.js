@@ -34,6 +34,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use("/api/signs", require("./routes/signs"));
 app.use("/api/videos", require("./routes/videos"));
+app.use("/api/translate", require("./routes/translate"));
 
 // Global error handler for routes that don't exist
 app.use((req, res) => {

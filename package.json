@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@vitalets/google-translate-api": "^9.2.1",
     "cloudinary": "^1.41.3",
     "dompurify": "^3.2.6",
     "multer-storage-cloudinary": "^4.0.0"
